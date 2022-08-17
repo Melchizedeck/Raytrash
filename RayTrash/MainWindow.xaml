@@ -144,7 +144,7 @@
             </GroupBox>
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
             <ProgressBar  Minimum="0" Maximum="1" IsIndeterminate="{Binding IsRendering}" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />
-            <TextBlock Text="Render Time:" Margin="4" />
+            <TextBlock Text="Last render duration:" Margin="4" />
             <TextBlock Text="{Binding RenderingDelay, Mode=OneWay}" Margin="4" />            
             <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
                 <Grid>
