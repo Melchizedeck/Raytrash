@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RayTrash", "RayTrash\RayTrash.csproj", "{584D8A1C-489F-473A-B423-FB210306CB5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raytrace", "Raytrace\Raytrace.csproj", "{AD76018C-F5E0-490C-A1B4-94562862303E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{584D8A1C-489F-473A-B423-FB210306CB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584D8A1C-489F-473A-B423-FB210306CB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584D8A1C-489F-473A-B423-FB210306CB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584D8A1C-489F-473A-B423-FB210306CB5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD76018C-F5E0-490C-A1B4-94562862303E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD76018C-F5E0-490C-A1B4-94562862303E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD76018C-F5E0-490C-A1B4-94562862303E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD76018C-F5E0-490C-A1B4-94562862303E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68CBE5AA-7A72-48C6-8B1E-D8D47136B786}
+	EndGlobalSection
+EndGlobal
