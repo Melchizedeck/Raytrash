@@ -41,6 +41,19 @@ namespace RayTrash
                 _renderer.RayTracer = value;
             }
         }
+
+        public IList<Sampler> AvailableSamplers { get; }
+        private Sampler _selectedSampler;
+        public Sampler SelectedSampler
+        {
+            get => _selectedSampler;
+            set
+            {
+                Set(ref _selectedSampler, value);
+                _renderer.Sampler = value;
+            }
+        }
+
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -57,6 +70,8 @@ namespace RayTrash
                 {".gif", ()=> new GifBitmapEncoder()},
             };
 
+            AllowModifications = true;
+
             AvailableRayTracers = new List<RayTracer>
             {
                 new HitRayTracer(),
@@ -64,12 +79,21 @@ namespace RayTrash
             };
 
             SelectedRayTracer = AvailableRayTracers[AvailableRayTracers.Count - 1];
+
+            AvailableSamplers = new List<Sampler>
+            {
+                new DirectSampler(),
+                new RandomSampler{ RayCount = 50}
+            };
+
+            SelectedSampler = AvailableSamplers[AvailableSamplers.Count - 1];
         }
         private void OnRender()
         {
             lock (this)
             {
                 _isRendering = true;
+                AllowModifications = false;
                 _render.RaiseCanExecuteChanged();
             }
             var context = new RenderContext(200, 100, this);
@@ -131,6 +155,13 @@ namespace RayTrash
             }
         }
 
+        private bool _allowModifications;
+        public bool AllowModifications
+        {
+            get => _allowModifications;
+            private set => Set(ref _allowModifications, value);
+        }
+
         private class RenderContext : IRenderContext
         {
             private readonly MainViewModel _viewModel;
@@ -181,7 +212,7 @@ namespace RayTrash
                         _viewModel.RenderedBitmap = BitmapSource.Create(Width, Height, dpiX, dpiY, _pixelFormat, null, _bytes, _stride);
                         _viewModel._save.RaiseCanExecuteChanged();
                     };
-
+                    _viewModel.AllowModifications = true;
                     var operation = _viewModel._dispatcher.BeginInvoke(onFinalise);
                 }
             }
