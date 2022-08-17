@@ -3,6 +3,7 @@ using RayTrace;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -131,10 +132,13 @@ namespace RayTrash
             }
         }
 
+        private readonly Stopwatch _renderWatch;
+        private TimeSpan _renderingDelay;
+        public TimeSpan RenderingDelay { get => _renderingDelay; private set => Set(ref _renderingDelay, value); }
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
-
+            _renderWatch = new Stopwatch();
             _renderer = new Renderer();
             _render = new Command(OnRender, CanRender);
             _save = new Command(OnSave, CanSave);
@@ -191,9 +195,11 @@ namespace RayTrash
         {
             lock (this)
             {
-                _isRendering = true;
+                IsRendering = true;
                 AllowModifications = false;
+                RenderProgress = 0;
                 _render.RaiseCanExecuteChanged();
+                _renderWatch.Restart();
             }
             var context = new RenderContext(RenderWidth, RenderHeight, this);
 
@@ -201,11 +207,26 @@ namespace RayTrash
         }
 
         private bool _isRendering;
+
+        public bool IsRendering
+        {
+            get => _isRendering;
+            private set => Set(ref _isRendering, value);
+        }
+
+        private double _renderProgress;
+
+        public double RenderProgress
+        {
+            get => _renderProgress;
+            private set => Set(ref _renderProgress, value);
+        }
+
         private bool CanRender()
         {
             lock (this)
             {
-                return !_isRendering;
+                return !IsRendering;
             }
         }
 
@@ -347,8 +368,9 @@ namespace RayTrash
             {
                 lock (_viewModel)
                 {
-                    _viewModel._isRendering = false;
-
+                    _viewModel.IsRendering = false;
+                    _viewModel._renderWatch.Stop();
+                    _viewModel.RenderingDelay = _viewModel._renderWatch.Elapsed;
                     Action onFinalise = () =>
                     {
                         _viewModel._render.RaiseCanExecuteChanged();
@@ -358,6 +380,7 @@ namespace RayTrash
                         _viewModel._save.RaiseCanExecuteChanged();
                     };
                     _viewModel.AllowModifications = true;
+                    _viewModel.RenderProgress = 1;
                     var operation = _viewModel._dispatcher.BeginInvoke(onFinalise);
                 }
             }
