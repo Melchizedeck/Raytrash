@@ -12,10 +12,9 @@
             {
                 for (var i = 0; i < nx; i++)
                 {
-                    var r = (float)i / nx;
-                    var g = (float)j / ny;
-                    var b = 0.2f;
-                    renderContext.OnRender(i, j, r, g, b, 1);
+                    var col = new Vector3((float)i / nx, (float)j / ny, 0.2f);
+
+                    renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }
             }
 
