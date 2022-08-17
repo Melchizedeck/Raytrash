@@ -7,7 +7,7 @@ namespace RayTrace
     {
         public Renderer()
         {
-            RayTracer = new NormalRayTracer();
+            RayTracer = new MaterialRayTracer();
             Sampler = new DirectSampler();
             Hitables = new List<Hitable>
             {
@@ -47,7 +47,7 @@ namespace RayTrace
                 for (var i = 0; i < nx; i++)
                 {
                     var col = Sampler.color(i, j, nx, ny, camera, RayTracer, Hitables);
-
+                    
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }
             }
