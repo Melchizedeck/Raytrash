@@ -140,6 +140,9 @@ namespace RayTrash
         private readonly Stopwatch _renderWatch;
         private TimeSpan _renderingDelay;
         public TimeSpan RenderingDelay { get => _renderingDelay; private set => Set(ref _renderingDelay, value); }
+
+        private TimeSpan _estimatedTimeOfArrival;
+        public TimeSpan EstimatedTimeOfArrival { get => _estimatedTimeOfArrival; private set => Set(ref _estimatedTimeOfArrival, value); }
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -203,6 +206,11 @@ namespace RayTrash
         private void _progress_ProgressChanged(object sender, double e)
         {
             RenderProgress = e;
+            if (RenderProgress > 0)
+            {
+                EstimatedTimeOfArrival = TimeSpan.FromMilliseconds(_renderWatch.ElapsedMilliseconds / RenderProgress * (1 - RenderProgress));
+            }
+
         }
 
         private CancellationTokenSource _renderCancellationTokenSource;

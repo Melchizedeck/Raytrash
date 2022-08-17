@@ -145,11 +145,20 @@
 
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
             <Button  Content="Cancel Render" Command="{Binding CancelRender}" Margin="2"/>
-
-
             <ProgressBar  Minimum="0" Maximum="1" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />
+
+            <TextBlock Margin="4" >
+                <Run Text="ETA:"/>
+                <Run Text="{Binding EstimatedTimeOfArrival.TotalSeconds, Mode=OneWay, StringFormat={}{0:F1}}"/>
+                <Run Text="Secondes"/>
+            </TextBlock>
+
+
+
             <TextBlock Text="Last render duration:" Margin="4" />
             <TextBlock Text="{Binding RenderingDelay, Mode=OneWay}" Margin="4" />
+
+
             <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
                 <Grid>
                     <Grid.RowDefinitions>
