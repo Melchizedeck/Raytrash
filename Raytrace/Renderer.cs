@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RayTrace
 {
@@ -7,9 +8,16 @@ namespace RayTrace
         public Renderer()
         {
             RayTracer = new NormalRayTracer();
+            Hitables = new List<Hitable>
+            {
+                new Sphere{ Center= new Vector3(0,0,-1), Radius=0.5f },
+                new Sphere{ Center= new Vector3(0,-100.5f,-1), Radius=100f },
+            };
         }
 
         public RayTracer RayTracer { get; set; }
+
+        public List<Hitable> Hitables { get; set; }
 
         public void Render(IRenderContext renderContext)
         {
@@ -35,7 +43,7 @@ namespace RayTrace
                     var v = (float)j / ny;
 
                     var r = new Ray(origin, lowerLeftCorner + u * horizontal + v * vertical);
-                    var col = RayTracer.color(r);
+                    var col = RayTracer.color(r, Hitables);
 
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }
