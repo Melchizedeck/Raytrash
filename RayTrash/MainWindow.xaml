@@ -10,6 +10,9 @@
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <local:Vector3ToStringConverter x:Key="vectorToStringConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -20,6 +23,54 @@
                RenderOptions.BitmapScalingMode="NearestNeighbor"/>
 
         <StackPanel Grid.Column="1">
+            <Grid  IsEnabled="{Binding AllowModifications}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Width:"/>
+                <TextBox Grid.Column="1" Text="{Binding RenderWidth}"/>
+                <TextBlock Grid.Column="2" Text="Height:"/>
+                <TextBox Grid.Column="3" Text="{Binding RenderHeight}"/>
+            </Grid>
+            <GroupBox Header="Camera"  IsEnabled="{Binding AllowModifications}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="FOV:"/>
+                        <TextBox Grid.Column="1" Text="{Binding FOV}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Look From:"/>
+                        <TextBox Grid.Column="1" Text="{Binding LookFrom, Converter={StaticResource vectorToStringConverter}}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Look To:"/>
+                        <TextBox Grid.Column="1" Text="{Binding LookAt, Converter={StaticResource vectorToStringConverter}}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Up:"/>
+                        <TextBox Grid.Column="1" Text="{Binding VUP, Converter={StaticResource vectorToStringConverter}}"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
             <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
                 <Grid>
@@ -45,7 +96,7 @@
                         <ContentPresenter.Resources>
                             <DataTemplate DataType="{x:Type rayTrace:HitRayTracer}">
                             </DataTemplate>
-                            <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">                               
+                            <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">
                             </DataTemplate>
                         </ContentPresenter.Resources>
                     </ContentPresenter>
@@ -71,7 +122,7 @@
                     </ComboBox>
                     <ContentPresenter Grid.Row="1" Content="{Binding SelectedSampler}">
                         <ContentPresenter.Resources>
-                            <DataTemplate DataType="{x:Type rayTrace:DirectSampler}">                                
+                            <DataTemplate DataType="{x:Type rayTrace:DirectSampler}">
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type rayTrace:RandomSampler}">
                                 <Grid>

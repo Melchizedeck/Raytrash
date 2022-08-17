@@ -54,6 +54,59 @@ namespace RayTrash
             }
         }
 
+        private int _renderWidth;
+        public int RenderWidth
+        {
+            get => _renderWidth;
+            set { Set(ref _renderWidth, value); }
+        }
+
+        private int _renderHeight;
+        public int RenderHeight
+        {
+            get => _renderHeight;
+            set { Set(ref _renderHeight, value); }
+        }
+
+        public float FOV
+        {
+            get => _renderer.Camera.FOV;
+            set
+            {
+                _renderer.Camera.FOV = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+
+        public Vector3 LookFrom
+        {
+            get => _renderer.Camera.LookFrom;
+            set
+            {
+                _renderer.Camera.LookFrom = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+
+        public Vector3 LookAt
+        {
+            get => _renderer.Camera.LookAt;
+            set
+            {
+                _renderer.Camera.LookAt = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+        public Vector3 VUP
+        {
+            get => _renderer.Camera.VUP;
+            set
+            {
+                _renderer.Camera.VUP = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -88,6 +141,10 @@ namespace RayTrash
             };
 
             SelectedSampler = AvailableSamplers[AvailableSamplers.Count - 1];
+
+            RenderWidth = 200;
+            RenderHeight = 100;
+            FOV = 90;
         }
         private void OnRender()
         {
@@ -97,7 +154,7 @@ namespace RayTrash
                 AllowModifications = false;
                 _render.RaiseCanExecuteChanged();
             }
-            var context = new RenderContext(200, 100, this);
+            var context = new RenderContext(RenderWidth, RenderHeight, this);
 
             Task.Run(() => _renderer.Render(context));
         }
