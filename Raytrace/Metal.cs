@@ -4,10 +4,7 @@
     {
         public Vector3 Albedo { get; set; }
         public float Fuzz { get; set; }
-        public Vector3 Reflect(Vector3 v, Vector3 n)
-        {
-            return v - 2 * Vector3.Dot(v, n) * n;
-        }
+       
 
         public override bool Scatter(Ray r, HitRecord record, out Vector3 attenuation, out Ray scattered)
         {
