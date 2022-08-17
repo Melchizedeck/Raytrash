@@ -36,6 +36,9 @@
                             <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">
                                 <TextBlock Text="Normal"/>
                             </DataTemplate>
+                            <DataTemplate DataType="{x:Type rayTrace:MaterialRayTracer}">
+                                <TextBlock Text="Material"/>
+                            </DataTemplate>
                         </ComboBox.Resources>
                     </ComboBox>
                     <ContentPresenter Grid.Row="1" Content="{Binding SelectedRayTracer}">
