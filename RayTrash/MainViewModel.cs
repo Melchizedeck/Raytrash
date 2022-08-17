@@ -75,7 +75,8 @@ namespace RayTrash
             AvailableRayTracers = new List<RayTracer>
             {
                 new HitRayTracer(),
-                new NormalRayTracer()
+                new NormalRayTracer(),
+                new MaterialRayTracer()
             };
 
             SelectedRayTracer = AvailableRayTracers[AvailableRayTracers.Count - 1];
