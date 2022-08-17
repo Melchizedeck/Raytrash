@@ -47,7 +47,7 @@ namespace RayTrace
                 for (var i = 0; i < nx; i++)
                 {
                     var col = Sampler.color(i, j, nx, ny, camera, RayTracer, Hitables);
-                    
+                    col = new Vector3((float)Math.Sqrt(col[0]),(float)Math.Sqrt(col[1]),(float)Math.Sqrt(col[2]));
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }
             }
