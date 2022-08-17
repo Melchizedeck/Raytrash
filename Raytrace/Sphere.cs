@@ -23,6 +23,7 @@ namespace RayTrace
                     record.t = temp;
                     record.p = p;
                     record.normal = (p - Center) / Radius;
+                    record.Material = Material;
                     return true;
                 }
 
@@ -33,6 +34,7 @@ namespace RayTrace
                     record.t = temp;
                     record.p = p;
                     record.normal = (p - Center) / Radius;
+                    record.Material = Material;
                     return true;
                 }
             }
