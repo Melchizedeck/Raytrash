@@ -23,6 +23,7 @@
                RenderOptions.BitmapScalingMode="NearestNeighbor"/>
 
         <StackPanel Grid.Column="1">
+            <Button Content="Randomize Scene" Command="{Binding RandomizeScene}" IsEnabled="{Binding AllowModifications}" Margin="2"/>
             <Grid  IsEnabled="{Binding AllowModifications}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
