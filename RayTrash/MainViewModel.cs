@@ -54,6 +54,29 @@ namespace RayTrash
             }
         }
 
+        public IList<Lens> AvailableLenses { get; }
+        private Lens _selectedLens;
+        public Lens SelectedLens
+        {
+            get => _renderer.Camera.Lens;
+            set
+            {
+                Set(ref _selectedLens, value);
+                _renderer.Camera.Lens = value;
+            }
+        }
+        public IList<Focus> AvailableFocuses { get; }
+        private Focus _selectedFocuses;
+        public Focus SelectedFocus
+        {
+            get => _renderer.Camera.Focus;
+            set
+            {
+                Set(ref _selectedFocuses, value);
+                _renderer.Camera.Focus = value;
+            }
+        }
+
         private int _renderWidth;
         public int RenderWidth
         {
@@ -141,6 +164,22 @@ namespace RayTrash
             };
 
             SelectedSampler = AvailableSamplers[AvailableSamplers.Count - 1];
+
+            AvailableFocuses = new List<Focus>
+            {
+                new FixFocus{ Distance = 1},
+                new AutoFocus()
+            };
+
+            SelectedFocus = AvailableFocuses[AvailableFocuses.Count - 1];
+
+            AvailableLenses = new List<Lens>
+            {
+                new PerfectLens(),
+                new RandomLens{  Aperture= 2},
+            };
+
+            SelectedLens = AvailableLenses[AvailableLenses.Count - 1];
 
             RenderWidth = 200;
             RenderHeight = 100;

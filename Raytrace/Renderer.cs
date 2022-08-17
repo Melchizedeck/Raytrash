@@ -21,7 +21,9 @@ namespace RayTrace
                 FOV = 90,
                 LookFrom = new Vector3(-2, 2, 1),
                 LookAt = new Vector3(0, 0, -1),
-                VUP = new Vector3(0, 1, 0)
+                VUP = new Vector3(0, 1, 0),
+                Focus = new AutoFocus(),
+                Lens = new PerfectLens()
             };
         }
         public Camera Camera { get; set; }

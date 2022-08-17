@@ -37,6 +37,76 @@
             </Grid>
             <GroupBox Header="Camera"  IsEnabled="{Binding AllowModifications}">
                 <StackPanel>
+                    <GroupBox Header="Lens" IsEnabled="{Binding AllowModifications}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableLenses}"
+                                      SelectedItem="{Binding SelectedLens}" Margin="2">
+                                <ComboBox.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:PerfectLens}">
+                                        <TextBlock Text="Perfect"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:RandomLens}">
+                                        <TextBlock Text="Random"/>
+                                    </DataTemplate>
+                                </ComboBox.Resources>
+                            </ComboBox>
+                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedLens}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:PerfectLens}">
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:RandomLens}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Aperture:"/>
+                                            <TextBox Grid.Column="1" Text="{Binding Aperture}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Focus" IsEnabled="{Binding AllowModifications}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableFocuses}"
+                                      SelectedItem="{Binding SelectedFocus}" Margin="2">
+                                <ComboBox.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:FixFocus}">
+                                        <TextBlock Text="Fix"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">
+                                        <TextBlock Text="Auto"/>
+                                    </DataTemplate>
+                                </ComboBox.Resources>
+                            </ComboBox>
+                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedFocus}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:FixFocus}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Aperture:"/>
+                                            <TextBox Grid.Column="1" Text="{Binding Distance}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">                                       
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Grid>
+                    </GroupBox>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
