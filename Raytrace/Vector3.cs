@@ -5,11 +5,13 @@ namespace RayTrace
     public struct Vector3
     {
         private readonly float[] _values;
-   
+
         public Vector3(float x, float y, float z)
         {
             _values = new[] { x, y, z };
         }
+
+        public bool IsEmpty => _values == null;
         public float Length => (float)Math.Sqrt(SquaredLength);
         public float SquaredLength => _values[0] * _values[0] + _values[1] * _values[1] + _values[2] * _values[2];
 

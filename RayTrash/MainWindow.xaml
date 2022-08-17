@@ -10,6 +10,9 @@
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <local:Vector3ToStringConverter x:Key="vectorToStringConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -20,6 +23,125 @@
                RenderOptions.BitmapScalingMode="NearestNeighbor"/>
 
         <StackPanel Grid.Column="1">
+            <Button Content="Randomize Scene" Command="{Binding RandomizeScene}" IsEnabled="{Binding AllowModifications}" Margin="2"/>
+            <Grid  IsEnabled="{Binding AllowModifications}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Width:"/>
+                <TextBox Grid.Column="1" Text="{Binding RenderWidth}"/>
+                <TextBlock Grid.Column="2" Text="Height:"/>
+                <TextBox Grid.Column="3" Text="{Binding RenderHeight}"/>
+            </Grid>
+            <GroupBox Header="Camera"  IsEnabled="{Binding AllowModifications}">
+                <StackPanel>
+                    <GroupBox Header="Lens" IsEnabled="{Binding AllowModifications}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableLenses}"
+                                      SelectedItem="{Binding SelectedLens}" Margin="2">
+                                <ComboBox.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:PerfectLens}">
+                                        <TextBlock Text="Perfect"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:RandomLens}">
+                                        <TextBlock Text="Random"/>
+                                    </DataTemplate>
+                                </ComboBox.Resources>
+                            </ComboBox>
+                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedLens}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:PerfectLens}">
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:RandomLens}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Aperture:"/>
+                                            <TextBox Grid.Column="1" Text="{Binding Aperture}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Focus" IsEnabled="{Binding AllowModifications}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableFocuses}"
+                                      SelectedItem="{Binding SelectedFocus}" Margin="2">
+                                <ComboBox.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:FixFocus}">
+                                        <TextBlock Text="Fix"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">
+                                        <TextBlock Text="Auto"/>
+                                    </DataTemplate>
+                                </ComboBox.Resources>
+                            </ComboBox>
+                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedFocus}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type rayTrace:FixFocus}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Aperture:"/>
+                                            <TextBox Grid.Column="1" Text="{Binding Distance}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">                                       
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Grid>
+                    </GroupBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="FOV:"/>
+                        <TextBox Grid.Column="1" Text="{Binding FOV}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Look From:"/>
+                        <TextBox Grid.Column="1" Text="{Binding LookFrom, Converter={StaticResource vectorToStringConverter}}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Look To:"/>
+                        <TextBox Grid.Column="1" Text="{Binding LookAt, Converter={StaticResource vectorToStringConverter}}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Up:"/>
+                        <TextBox Grid.Column="1" Text="{Binding VUP, Converter={StaticResource vectorToStringConverter}}"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
             <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
                 <Grid>
@@ -45,7 +167,7 @@
                         <ContentPresenter.Resources>
                             <DataTemplate DataType="{x:Type rayTrace:HitRayTracer}">
                             </DataTemplate>
-                            <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">                               
+                            <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">
                             </DataTemplate>
                         </ContentPresenter.Resources>
                     </ContentPresenter>
@@ -71,7 +193,7 @@
                     </ComboBox>
                     <ContentPresenter Grid.Row="1" Content="{Binding SelectedSampler}">
                         <ContentPresenter.Resources>
-                            <DataTemplate DataType="{x:Type rayTrace:DirectSampler}">                                
+                            <DataTemplate DataType="{x:Type rayTrace:DirectSampler}">
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type rayTrace:RandomSampler}">
                                 <Grid>

@@ -28,7 +28,8 @@ namespace RayTrash
         public ICommand Render => _render;
         private Command _save;
         public ICommand Save => _save;
-
+        private Command _randomizeScene;
+        public ICommand RandomizeScene => _randomizeScene;
         public IList<RayTracer> AvailableRayTracers { get; }
 
         private RayTracer _selectedRayTracer;
@@ -54,6 +55,82 @@ namespace RayTrash
             }
         }
 
+        public IList<Lens> AvailableLenses { get; }
+        private Lens _selectedLens;
+        public Lens SelectedLens
+        {
+            get => _renderer.Camera.Lens;
+            set
+            {
+                Set(ref _selectedLens, value);
+                _renderer.Camera.Lens = value;
+            }
+        }
+        public IList<Focus> AvailableFocuses { get; }
+        private Focus _selectedFocuses;
+        public Focus SelectedFocus
+        {
+            get => _renderer.Camera.Focus;
+            set
+            {
+                Set(ref _selectedFocuses, value);
+                _renderer.Camera.Focus = value;
+            }
+        }
+
+        private int _renderWidth;
+        public int RenderWidth
+        {
+            get => _renderWidth;
+            set { Set(ref _renderWidth, value); }
+        }
+
+        private int _renderHeight;
+        public int RenderHeight
+        {
+            get => _renderHeight;
+            set { Set(ref _renderHeight, value); }
+        }
+
+        public float FOV
+        {
+            get => _renderer.Camera.FOV;
+            set
+            {
+                _renderer.Camera.FOV = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+
+        public Vector3 LookFrom
+        {
+            get => _renderer.Camera.LookFrom;
+            set
+            {
+                _renderer.Camera.LookFrom = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+
+        public Vector3 LookAt
+        {
+            get => _renderer.Camera.LookAt;
+            set
+            {
+                _renderer.Camera.LookAt = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+        public Vector3 VUP
+        {
+            get => _renderer.Camera.VUP;
+            set
+            {
+                _renderer.Camera.VUP = value;
+                RaisePropertyChangedEvent();
+            }
+        }
+
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -61,6 +138,7 @@ namespace RayTrash
             _renderer = new Renderer();
             _render = new Command(OnRender, CanRender);
             _save = new Command(OnSave, CanSave);
+            _randomizeScene = new Command(OnRandomizeScene);
             _getEncoders = new Dictionary<string, Func<BitmapEncoder>>
             {
                 {".png", ()=> new PngBitmapEncoder()},
@@ -88,6 +166,26 @@ namespace RayTrash
             };
 
             SelectedSampler = AvailableSamplers[AvailableSamplers.Count - 1];
+
+            AvailableFocuses = new List<Focus>
+            {
+                new FixFocus{ Distance = 1},
+                new AutoFocus()
+            };
+
+            SelectedFocus = AvailableFocuses[AvailableFocuses.Count - 1];
+
+            AvailableLenses = new List<Lens>
+            {
+                new PerfectLens(),
+                new RandomLens{  Aperture= 2},
+            };
+
+            SelectedLens = AvailableLenses[AvailableLenses.Count - 1];
+
+            RenderWidth = 200;
+            RenderHeight = 100;
+            FOV = 90;
         }
         private void OnRender()
         {
@@ -97,7 +195,7 @@ namespace RayTrash
                 AllowModifications = false;
                 _render.RaiseCanExecuteChanged();
             }
-            var context = new RenderContext(200, 100, this);
+            var context = new RenderContext(RenderWidth, RenderHeight, this);
 
             Task.Run(() => _renderer.Render(context));
         }
@@ -155,6 +253,52 @@ namespace RayTrash
                 return !_isSaving && RenderedBitmap != null;
             }
         }
+
+        private void OnRandomizeScene()
+        {
+            var hitables = new List<Hitable>
+            {
+                new Sphere{ Center=new Vector3(0,-1000, 0), Radius=1000, Material =new Lambertian{ Albedo= new Vector3(0.5f, 0.5f, 0.5f) }},
+
+                new Sphere{ Center=new Vector3(0,1, 0), Radius=1, Material =new Dielectric{ RefractionIndex=1.5f }},
+                new Sphere{ Center=new Vector3(-4,1, 0), Radius=1, Material =new Lambertian{ Albedo= new Vector3(0.4f, 0.2f, 0.1f) }},
+                new Sphere{ Center=new Vector3(4,1, 0), Radius=1, Material =new Metal{ Albedo= new Vector3(0.7f, 0.6f, 0.5f), Fuzz=0 }},
+            };
+            var random = new Random();
+            for (var a = -11; a < 11; a++)
+            {
+                for (var b = -11; b < 11; b++)
+                {
+                    var center = new Vector3(a + (float)(0.9 * random.NextDouble()), 0.2f, b + (float)(0.9 * random.NextDouble()));
+
+                    if ((center - new Vector3(4, 0.2f, 0)).Length > 0.9)
+                    {
+                        Material material;
+                        var choseMaterial = random.NextDouble();
+                        if (choseMaterial < 0.8f)
+                        {
+                            material = new Lambertian { Albedo = new Vector3((float)(random.NextDouble() * random.NextDouble()), (float)(random.NextDouble() * random.NextDouble()), (float)(random.NextDouble() * random.NextDouble())) };
+                        }
+                        else if (choseMaterial < 0.95f)
+                        {
+                            material = new Metal { Albedo = new Vector3((float)(0.5 * (1 + random.NextDouble())), (float)(0.5 * (1 + random.NextDouble())), (float)(0.5 * (1 + random.NextDouble()))), Fuzz = (float)(0.5 + random.NextDouble()) };
+                        }
+                        else
+                        {
+                            material = new Dielectric { RefractionIndex = 1.5f };
+                        }
+                        hitables.Add(new Sphere { Center = center, Radius = 0.2f, Material = material });
+                    }
+                }
+            }
+
+            LookFrom = new Vector3(10, 2, 2.5f);
+            LookAt = new Vector3(0, 0, 0);
+            FOV = 30;
+
+            _renderer.Hitables = hitables;
+        }
+
 
         private bool _allowModifications;
         public bool AllowModifications
