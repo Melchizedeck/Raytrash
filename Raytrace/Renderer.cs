@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RayTrace
 {
@@ -31,7 +33,7 @@ namespace RayTrace
         public Sampler Sampler { get; set; }
         public List<Hitable> Hitables { get; set; }
 
-        public void Render(IRenderContext renderContext)
+        public async Task Render(IRenderContext renderContext, IProgress<double> progress, CancellationToken cancellation)
         {
             if (RayTracer == null)
             {
@@ -53,23 +55,39 @@ namespace RayTrace
                 throw new ArgumentNullException(nameof(Camera));
             }
 
-            int nx = renderContext.Width;
-            int ny = renderContext.Height;
-            renderContext.OnInit();
-
-            Camera.Aspect = (float)nx / (float)ny;
-
-            for (var j = ny - 1; j >= 0; j--)
+            await Task.Run(() =>
             {
-                for (var i = 0; i < nx; i++)
-                {
-                    var col = Sampler.color(i, j, nx, ny, Camera, RayTracer, Hitables);
-                    col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
-                    renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
-                }
-            }
+                int nx = renderContext.Width;
+                int ny = renderContext.Height;
+                renderContext.OnInit();
 
-            renderContext.OnFinalise();
+                Camera.Aspect = (float)nx / (float)ny;
+
+                for (var j = ny - 1; j >= 0; j--)
+                {
+                    for (var i = 0; i < nx; i++)
+                    {
+                        var col = Sampler.color(i, j, nx, ny, Camera, RayTracer, Hitables);
+                        if (cancellation.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
+                        renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
+                    }
+
+                    if (cancellation.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                    progress.Report(1D - (double)j / ny);
+                }
+            }, cancellation).ContinueWith(t => renderContext.OnFinalise());
+        }
+        public void Render(IRenderContext renderContext)
+        {
+            Render(renderContext, new Progress<double>(), CancellationToken.None).Wait();
         }
     }
 }
