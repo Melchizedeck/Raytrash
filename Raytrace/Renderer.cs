@@ -14,7 +14,7 @@ namespace RayTrace
                 new Sphere{ Center= new Vector3(0,0,-1), Radius=0.5f, Material = new Lambertian{ Albedo=new Vector3(0.8f, 0.3f, 0.3f) } },
                 new Sphere{ Center= new Vector3(0,-100.5f,-1), Radius=100f, Material = new Lambertian{ Albedo=new Vector3(0.8f, 0.8f, 0f) } },
                 new Sphere{ Center= new Vector3(1,0,-1), Radius=0.5f, Material = new Metal{ Albedo=new Vector3(0.8f, 0.6f, 0.2f), Fuzz=0.3f } },
-                new Sphere{ Center= new Vector3(-1,0,-1), Radius=0.5f, Material = new Metal{ Albedo=new Vector3(0.8f, 0.8f, 0.8f), Fuzz=0.1f } },
+                new Sphere{ Center= new Vector3(-1,0,-1), Radius=0.5f, Material = new Dielectric{  RefractionIndex=1.5f } },
             };
         }
 
