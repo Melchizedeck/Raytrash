@@ -29,11 +29,7 @@ namespace RayTrace
             int nx = renderContext.Width;
             int ny = renderContext.Height;
             renderContext.OnInit();
-
-            var lowerLeftCorner = new Vector3(-2, -1, -1);
-            var horizontal = new Vector3(4, 0, 0);
-            var vertical = new Vector3(0, 2, 0);
-            var origin = new Vector3(0, 0, 0);
+            var camera = new Camera();
 
             for (var j = ny - 1; j >= 0; j--)
             {
@@ -42,7 +38,7 @@ namespace RayTrace
                     var u = (float)i / nx;
                     var v = (float)j / ny;
 
-                    var r = new Ray(origin, lowerLeftCorner + u * horizontal + v * vertical);
+                    var r = camera.GetRay(u, v);
                     var col = RayTracer.color(r, Hitables);
 
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
