@@ -5,6 +5,7 @@ namespace RayTrace
     public struct Vector3
     {
         private readonly float[] _values;
+   
         public Vector3(float x, float y, float z)
         {
             _values = new[] { x, y, z };

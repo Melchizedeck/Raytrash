@@ -8,6 +8,7 @@ namespace RayTrace
         public Renderer()
         {
             RayTracer = new NormalRayTracer();
+            Sampler = new DirectSampler();
             Hitables = new List<Hitable>
             {
                 new Sphere{ Center= new Vector3(0,0,-1), Radius=0.5f },
@@ -16,7 +17,7 @@ namespace RayTrace
         }
 
         public RayTracer RayTracer { get; set; }
-
+        public Sampler Sampler { get; set; }
         public List<Hitable> Hitables { get; set; }
 
         public void Render(IRenderContext renderContext)
@@ -24,6 +25,16 @@ namespace RayTrace
             if (RayTracer == null)
             {
                 throw new ArgumentNullException(nameof(RayTracer));
+            }
+
+            if (Sampler == null)
+            {
+                throw new ArgumentNullException(nameof(Sampler));
+            }
+
+            if (Hitables == null)
+            {
+                throw new ArgumentNullException(nameof(Hitables));
             }
 
             int nx = renderContext.Width;
@@ -35,11 +46,7 @@ namespace RayTrace
             {
                 for (var i = 0; i < nx; i++)
                 {
-                    var u = (float)i / nx;
-                    var v = (float)j / ny;
-
-                    var r = camera.GetRay(u, v);
-                    var col = RayTracer.color(r, Hitables);
+                    var col = Sampler.color(i, j, nx, ny, camera, RayTracer, Hitables);
 
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }

@@ -21,17 +21,69 @@
 
         <StackPanel Grid.Column="1">
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
-            <ComboBox ItemsSource="{Binding AvailableRayTracers}"
+            <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ComboBox ItemsSource="{Binding AvailableRayTracers}"
                       SelectedItem="{Binding SelectedRayTracer}" Margin="2">
-                <ComboBox.Resources>
-                    <DataTemplate DataType="{x:Type rayTrace:HitRayTracer}">
-                        <TextBlock Text="Hit"/>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">
-                        <TextBlock Text="Normal"/>
-                    </DataTemplate>
-                </ComboBox.Resources>
-            </ComboBox>
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type rayTrace:HitRayTracer}">
+                                <TextBlock Text="Hit"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">
+                                <TextBlock Text="Normal"/>
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                    </ComboBox>
+                    <ContentPresenter Grid.Row="1" Content="{Binding SelectedRayTracer}">
+                        <ContentPresenter.Resources>
+                            <DataTemplate DataType="{x:Type rayTrace:HitRayTracer}">
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">                               
+                            </DataTemplate>
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="Sampler" IsEnabled="{Binding AllowModifications}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableSamplers}"
+                      SelectedItem="{Binding SelectedSampler}" Margin="2">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type rayTrace:DirectSampler}">
+                                <TextBlock Text="Direct"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type rayTrace:RandomSampler}">
+                                <TextBlock Text="Random"/>
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                    </ComboBox>
+                    <ContentPresenter Grid.Row="1" Content="{Binding SelectedSampler}">
+                        <ContentPresenter.Resources>
+                            <DataTemplate DataType="{x:Type rayTrace:DirectSampler}">                                
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type rayTrace:RandomSampler}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Ray count:"/>
+                                    <TextBox Grid.Column="1" Text="{Binding RayCount}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                </Grid>
+            </GroupBox>
             <Button Content="Save" Command="{Binding Save}" Margin="2"/>
         </StackPanel>
     </Grid>
