@@ -16,8 +16,15 @@ namespace RayTrace
                 new Sphere{ Center= new Vector3(1,0,-1), Radius=0.5f, Material = new Metal{ Albedo=new Vector3(0.8f, 0.6f, 0.2f), Fuzz=0.3f } },
                 new Sphere{ Center= new Vector3(-1,0,-1), Radius=0.5f, Material = new Dielectric{  RefractionIndex=1.5f } },
             };
+            Camera = new Camera
+            {
+                FOV = 90,
+                LookFrom = new Vector3(-2, 2, 1),
+                LookAt = new Vector3(0, 0, -1),
+                VUP = new Vector3(0, 1, 0)
+            };
         }
-
+        public Camera Camera { get; set; }
         public RayTracer RayTracer { get; set; }
         public Sampler Sampler { get; set; }
         public List<Hitable> Hitables { get; set; }
@@ -39,16 +46,22 @@ namespace RayTrace
                 throw new ArgumentNullException(nameof(Hitables));
             }
 
+            if (Camera == null)
+            {
+                throw new ArgumentNullException(nameof(Camera));
+            }
+
             int nx = renderContext.Width;
             int ny = renderContext.Height;
             renderContext.OnInit();
-            var camera = new Camera();
+
+            Camera.Aspect = (float)nx / (float)ny;
 
             for (var j = ny - 1; j >= 0; j--)
             {
                 for (var i = 0; i < nx; i++)
                 {
-                    var col = Sampler.color(i, j, nx, ny, camera, RayTracer, Hitables);
+                    var col = Sampler.color(i, j, nx, ny, Camera, RayTracer, Hitables);
                     col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }
