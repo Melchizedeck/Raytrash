@@ -1,28 +1,23 @@
-﻿namespace RayTrace
+﻿using System;
+
+namespace RayTrace
 {
     public class Renderer
     {
-        bool hitSphere(Vector3 center, float radius, Ray r)
+        public Renderer()
         {
-            var oc = r.Origin - center;
-            var a = Vector3.Dot(r.Direction, r.Direction);
-            var b = 2f * Vector3.Dot(oc, r.Direction);
-            var c = Vector3.Dot(oc, oc) - radius * radius;
-            var discriminant = b * b - 4 * a * c;
-            return discriminant > 0;
+            RayTracer = new NormalRayTracer();
         }
-        Vector3 color(Ray r)
-        {
-            if (hitSphere(new Vector3(0, 0, -1), 0.5f, r))
-            {
-                return new Vector3(1, 0, 0);
-            }
-            var unitDirection = Vector3.UnitVector(r.Direction);
-            var t = 0.5f * (unitDirection[1] + 1);
-            return (1.0f - t) * new Vector3(1, 1, 1) + t * new Vector3(0.5f, 0.7f, 1f);
-        }
+
+        public RayTracer RayTracer { get; set; }
+
         public void Render(IRenderContext renderContext)
         {
+            if (RayTracer == null)
+            {
+                throw new ArgumentNullException(nameof(RayTracer));
+            }
+
             int nx = renderContext.Width;
             int ny = renderContext.Height;
             renderContext.OnInit();
@@ -40,7 +35,7 @@
                     var v = (float)j / ny;
 
                     var r = new Ray(origin, lowerLeftCorner + u * horizontal + v * vertical);
-                    var col = color(r);
+                    var col = RayTracer.color(r);
 
                     renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
                 }
