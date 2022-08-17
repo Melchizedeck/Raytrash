@@ -58,7 +58,7 @@ namespace RayTrash
 
             public void OnRender(int x, int y, double r, double g, double b, double alpha)
             {
-                var pixelIndex = y * _stride + x * _bytesPerPixel;
+                var pixelIndex = (Height - 1 - y) * _stride + x * _bytesPerPixel;
                 _bytes[pixelIndex] = (byte)(255D * r);
                 _bytes[pixelIndex + 1] = (byte)(255D * g);
                 _bytes[pixelIndex + 2] = (byte)(255D * b);
