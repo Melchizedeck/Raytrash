@@ -4,11 +4,35 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RayTrash"
+        xmlns:rayTrace="clr-namespace:RayTrace;assembly=Raytrace"
         mc:Ignorable="d"
-        Title="RayTrash" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="RayTrash" Height="450" Width="800">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
         <Image Source="{Binding RenderedBitmap}"
                SnapsToDevicePixels="True"
                RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+
+        <StackPanel Grid.Column="1">
+            <Button Content="Render" Command="{Binding Render}" Margin="2"/>
+            <ComboBox ItemsSource="{Binding AvailableRayTracers}"
+                      SelectedItem="{Binding SelectedRayTracer}" Margin="2">
+                <ComboBox.Resources>
+                    <DataTemplate DataType="{x:Type rayTrace:HitRayTracer}">
+                        <TextBlock Text="Hit"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type rayTrace:NormalRayTracer}">
+                        <TextBlock Text="Normal"/>
+                    </DataTemplate>
+                </ComboBox.Resources>
+            </ComboBox>
+            <Button Content="Save" Command="{Binding Save}" Margin="2"/>
+        </StackPanel>
     </Grid>
 </Window>
