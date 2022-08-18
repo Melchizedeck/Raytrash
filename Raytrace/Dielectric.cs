@@ -15,7 +15,7 @@ namespace RayTrace
         }
         public Vector3 Refract(Vector3 uv, Vector3 n, double etaiOverEtat)
         {
-            var cosTheta = Math.Min(Vector3.Dot(uv, n), 1D);
+            var cosTheta = Math.Min(Vector3.Dot(-uv, n), 1D);
             var rOutPerp = etaiOverEtat * (uv + cosTheta * n);
             var rOutParallel = -Math.Sqrt(Math.Abs(1D - rOutPerp.SquaredLength)) * n;
             return rOutPerp + rOutParallel;
