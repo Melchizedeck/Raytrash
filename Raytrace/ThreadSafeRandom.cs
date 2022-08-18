@@ -17,7 +17,10 @@ namespace RayTrace
                 _local = new Random(seed);
             }
             return _local.NextDouble();
-
         }
+
+        public static double NextDouble(double min, double max)
+            => min + (max - min) * NextDouble();
+
     }
 }
