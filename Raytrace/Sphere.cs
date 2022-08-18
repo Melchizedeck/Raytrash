@@ -35,7 +35,9 @@ namespace RayTrace
             var p = r.PointAt(temp);
             record.t = temp;
             record.p = p;
-            record.normal = (p - Center) / Radius;
+
+            var outwardNormal = (p - Center) / Radius;
+            record.SetFaceNormal(r, outwardNormal);
             record.Material = Material;
             return true;
         }

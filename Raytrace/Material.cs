@@ -9,16 +9,31 @@ namespace RayTrace
             return v - 2 * Vector3.Dot(v, n) * n;
         }
 
+        public Vector3 RandomInUnitVector()
+            => Vector3.UnitVector(RandomInUnitSphere());
+
         public Vector3 RandomInUnitSphere()
         {
             while (true)
             {
                 var p = Vector3.Random(-1, 1);
-                if(p.SquaredLength>=1)
+                if (p.SquaredLength >= 1)
                 {
                     continue;
                 }
                 return p;
+            }
+        }
+        public Vector3 RandomInUnitSphere(Vector3 normal)
+        {
+            var inUnitSphere = RandomInUnitSphere();
+            if (Vector3.Dot(inUnitSphere, normal) > 0)
+            {
+                return inUnitSphere;
+            }
+            else
+            {
+                return -inUnitSphere;
             }
         }
         public abstract bool Scatter(Ray r, HitRecord record, out Vector3 attenuation, out Ray scattered);

@@ -13,9 +13,18 @@ namespace RayTrace
 
         public static Vector3 Random()
             => new Vector3(ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble());
-        
+
         public static Vector3 Random(double min, double max)
             => new Vector3(ThreadSafeRandom.NextDouble(min, max), ThreadSafeRandom.NextDouble(min, max), ThreadSafeRandom.NextDouble(min, max));
+
+        public bool IsNearZero
+        {
+            get
+            {
+                var s = 1e-8;
+                return Math.Abs(this[0]) < s && Math.Abs(this[1]) < s && Math.Abs(this[2]) < s;
+            }
+        }
         public bool IsEmpty => _values == null;
         public double Length => Math.Sqrt(SquaredLength);
         public double SquaredLength => _values[0] * _values[0] + _values[1] * _values[1] + _values[2] * _values[2];

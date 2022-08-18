@@ -6,67 +6,46 @@ namespace RayTrace
     {
         public double RefractionIndex { get; set; }
 
-        double Schlick(double cosine, double ref_idx)
+        // Use Schlick's approximation for reflectance.
+        double Reflectance(double cosine, double ref_idx)
         {
-            var r0 = (1 - ref_idx) / (1 + ref_idx);
+            var r0 = (1D - ref_idx) / (1D + ref_idx);
             r0 = r0 * r0;
-            return r0 + (1 - r0) * Math.Pow(1 - cosine, 5);
+            return r0 + (1D - r0) * Math.Pow(1D - cosine, 5D);
         }
-        public bool Refract(Vector3 v, Vector3 n, double niOverNt, out Vector3 refracted)
+        public Vector3 Refract(Vector3 uv, Vector3 n, double etaiOverEtat)
         {
-            var uv = Vector3.UnitVector(v);
-            var dt = Vector3.Dot(uv, n);
-            var discriminant = 1 - niOverNt * niOverNt * (1 - dt * dt);
-
-            if (discriminant > 0)
-            {
-                refracted = niOverNt * (v - n * dt) - n * Math.Sqrt(discriminant);
-                return true;
-            }
-            refracted = new Vector3(0, 0, 0);
-            return false;
+            var cosTheta = Math.Min(Vector3.Dot(uv, n), 1D);
+            var rOutPerp = etaiOverEtat * (uv + cosTheta * n);
+            var rOutParallel = -Math.Sqrt(Math.Abs(1D - rOutPerp.SquaredLength)) * n;
+            return rOutPerp + rOutParallel;
         }
 
         public override bool Scatter(Ray r, HitRecord record, out Vector3 attenuation, out Ray scattered)
         {
-            Vector3 outwardNormal;
-            var reflected = Reflect(r.Direction, record.normal);
-            double niOverNt;
             attenuation = new Vector3(1, 1, 1);
-            Vector3 refracted;
-            double reflectProb;
-            double cosine;
 
-            if (Vector3.Dot(r.Direction, record.normal) > 0)
+
+            var refractionRatio = record.frontFace ? (1D / RefractionIndex) : RefractionIndex;
+            var unitDirection = Vector3.UnitVector(r.Direction);
+
+            var cosTheta = Math.Min(Vector3.Dot(-unitDirection, record.normal), 1D);
+            var sinTheta = Math.Sqrt(1D - cosTheta * cosTheta);
+            var cannotRefract = refractionRatio * sinTheta > 1D;
+
+            Vector3 direction; // 
+            if (cannotRefract || Reflectance(cosTheta, refractionRatio) > ThreadSafeRandom.NextDouble())
             {
-                outwardNormal = -record.normal;
-                niOverNt = RefractionIndex;
-                cosine = RefractionIndex * Vector3.Dot(r.Direction, record.normal) / r.Direction.Length;
+                direction = Reflect(unitDirection, record.normal);
             }
             else
             {
-                outwardNormal = record.normal;
-                niOverNt = 1 / RefractionIndex;
-                cosine = -Vector3.Dot(r.Direction, record.normal) / r.Direction.Length;
-            }
-            if (Refract(r.Direction, outwardNormal, niOverNt, out refracted))
-            {
-                reflectProb = Schlick(cosine, RefractionIndex);
-            }
-            else
-            {
-                reflectProb = 1;
+                direction = Refract(unitDirection, record.normal, refractionRatio);
             }
 
-            if (ThreadSafeRandom.NextDouble() < reflectProb)
-            {
-                scattered = new Ray(record.p, reflected);
-            }
-            else
-            {
-                scattered = new Ray(record.p, refracted);
-            }
 
+
+            scattered = new Ray(record.p, direction);
             return true;
         }
     }

@@ -22,8 +22,8 @@ namespace RayTrace
             var col = new Vector3(0, 0, 0);
             for (var i = 0; i < RayCount; i++)
             {
-                var u = (x - 0.5 + ThreadSafeRandom.NextDouble()) / width;
-                var v = (y - 0.5 + ThreadSafeRandom.NextDouble()) / height;
+                var u = (x - 0.5 + ThreadSafeRandom.NextDouble()) / (width - 1);
+                var v = (y - 0.5 + ThreadSafeRandom.NextDouble()) / (height - 1);
 
                 var r = camera.GetRay(u, v);
                 col += rayTracer.color(r, hitables);
