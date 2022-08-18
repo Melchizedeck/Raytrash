@@ -4,14 +4,6 @@ namespace RayTrace
 {
     public class Lambertian : Material
     {
-        public Lambertian()
-            : this(new Random())
-        {
-
-        }
-        public Lambertian(Random random):base(random)
-        {
-        }
         public Vector3 Albedo { get; set; }
         
        

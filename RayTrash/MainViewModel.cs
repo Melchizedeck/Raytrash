@@ -136,6 +136,15 @@ namespace RayTrash
                 RaisePropertyChangedEvent();
             }
         }
+        public int MaxDegreOfParallelism
+        {
+            get => _renderer.MaxDegreOfParallelism;
+            set
+            {
+                _renderer.MaxDegreOfParallelism = value;
+                RaisePropertyChangedEvent();
+            }
+        }
 
         private readonly Stopwatch _renderWatch;
         private TimeSpan _renderingDelay;

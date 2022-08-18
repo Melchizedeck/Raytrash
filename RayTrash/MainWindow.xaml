@@ -142,7 +142,14 @@
                     </Grid>
                 </StackPanel>
             </GroupBox>
-
+            <Grid  IsEnabled="{Binding AllowModifications}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>                    
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="MaxDegreOfParallelism:"/>
+                <TextBox Grid.Column="1" Text="{Binding MaxDegreOfParallelism}"/>                
+            </Grid>
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
             <Button  Content="Cancel Render" Command="{Binding CancelRender}" Margin="2"/>
             <ProgressBar  Minimum="0" Maximum="1" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />

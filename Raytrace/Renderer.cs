@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace RayTrace
 {
@@ -27,7 +28,9 @@ namespace RayTrace
                 Focus = new AutoFocus(),
                 Lens = new PerfectLens()
             };
+            MaxDegreOfParallelism = Environment.ProcessorCount;
         }
+        public int MaxDegreOfParallelism { get; set; }
         public Camera Camera { get; set; }
         public RayTracer RayTracer { get; set; }
         public Sampler Sampler { get; set; }
@@ -63,27 +66,36 @@ namespace RayTrace
 
                 Camera.Aspect = (float)nx / (float)ny;
 
-                for (var j = ny - 1; j >= 0; j--)
+                var progressIncrement = 1D / ny;
+                var progressValue = 0D;
+                void Render(int y)
                 {
                     for (var i = 0; i < nx; i++)
                     {
-                        var col = Sampler.color(i, j, nx, ny, Camera, RayTracer, Hitables);
-                        if (cancellation.IsCancellationRequested)
-                        {
-                            break;
-                        }
-
+                        var col = Sampler.color(i, y, nx, ny, Camera, RayTracer, Hitables);
                         col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
-                        renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
+                        renderContext.OnRender(i, y, col[0], col[1], col[2], 1);
                     }
-
-                    if (cancellation.IsCancellationRequested)
-                    {
-                        break;
-                    }
-                    progress.Report(1D - (double)j / ny);
+                    progressValue += progressIncrement;
+                    progress.Report(progressValue);
                 }
-            }, cancellation).ContinueWith(t => renderContext.OnFinalise());
+                var options = new ExecutionDataflowBlockOptions
+                {
+                    CancellationToken = cancellation,
+                    MaxDegreeOfParallelism = MaxDegreOfParallelism
+                };
+                var action = new ActionBlock<int>(Render, options);
+
+                for (var j = ny - 1; j >= 0; j--)
+                {
+                    action.Post(j);
+                }
+
+                action.Complete();
+
+                action.Completion.Wait(cancellation);
+            }, cancellation)
+                .ContinueWith(t => renderContext.OnFinalise());
         }
         public void Render(IRenderContext renderContext)
         {
