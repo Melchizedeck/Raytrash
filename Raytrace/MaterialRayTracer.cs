@@ -7,19 +7,25 @@ namespace RayTrace
         public MaterialRayTracer()
         {
             MaxDepth = 50;
+            RayHitMin = 0.0001;
         }
         public int MaxDepth { get; set; }
+
+        public double RayHitMin { get; set; }
         public override Vector3 color(Ray r, ICollection<Hitable> hitables)
-            => color(r, hitables, 0);
-        public Vector3 color(Ray r, ICollection<Hitable> hitables, int depth)
+            => color(r, hitables, RayHitMin, MaxDepth);
+        public Vector3 color(Ray r, ICollection<Hitable> hitables, double rayHitMin, int depth)
         {
-            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
+            if (depth <= 0)
             {
-                if (depth < MaxDepth && record.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
-                {
-                    return attenuation * color(scattered, hitables, depth + 1);
-                }
                 return new Vector3(0, 0, 0);
+            }
+            if (Hit(hitables, r, rayHitMin, double.MaxValue, out HitRecord record))
+            {
+                if (record.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
+                {
+                    return attenuation * color(scattered, hitables, rayHitMin, depth - 1);
+                }
             }
 
             var unitDirection = Vector3.UnitVector(r.Direction);
