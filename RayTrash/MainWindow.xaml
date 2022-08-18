@@ -142,30 +142,6 @@
                     </Grid>
                 </StackPanel>
             </GroupBox>
-            <Grid  IsEnabled="{Binding AllowModifications}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>                    
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="MaxDegreOfParallelism:"/>
-                <TextBox Grid.Column="1" Text="{Binding MaxDegreOfParallelism}"/>                
-            </Grid>
-            <Button Content="Render" Command="{Binding Render}" Margin="2"/>
-            <Button  Content="Cancel Render" Command="{Binding CancelRender}" Margin="2"/>
-            <ProgressBar  Minimum="0" Maximum="1" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />
-
-            <TextBlock Margin="4" >
-                <Run Text="ETA:"/>
-                <Run Text="{Binding EstimatedTimeOfArrival.TotalSeconds, Mode=OneWay, StringFormat={}{0:F1}}"/>
-                <Run Text="Secondes"/>
-            </TextBlock>
-
-
-
-            <TextBlock Text="Last render duration:" Margin="4" />
-            <TextBlock Text="{Binding RenderingDelay, Mode=OneWay}" Margin="4" />
-
-
             <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -212,7 +188,6 @@
                     </ContentPresenter>
                 </Grid>
             </GroupBox>
-
             <GroupBox Header="Sampler" IsEnabled="{Binding AllowModifications}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -248,6 +223,48 @@
                     </ContentPresenter>
                 </Grid>
             </GroupBox>
+            <Grid  IsEnabled="{Binding AllowModifications}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="MaxDegreOfParallelism:"/>
+                <TextBox Grid.Column="1" Text="{Binding MaxDegreOfParallelism}"/>
+            </Grid>
+            <Button Content="Render" Command="{Binding Render}" Margin="2" Height="40"  FontWeight="Bold"/>
+            <Button  Content="Cancel Render" Command="{Binding CancelRender}" Margin="2"/>
+            <ProgressBar  Minimum="0" Maximum="1" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />
+            <TextBlock Margin="4" >
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsRendering}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                <Run Text="Remaining :"/>
+                <Run Text="{Binding RemainingTime.TotalSeconds, Mode=OneWay, StringFormat={}{0:F1}}"/>
+                <Run Text="s"/>
+            </TextBlock>
+            <TextBlock Margin="4" >
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsRendering}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                <Run Text="ETA :"/>
+                <Run Text="{Binding EstimatedTimeOfArrival, Mode=OneWay, StringFormat={}{0:MM/dd/yyyy HH:mm:ss}}"/>
+            </TextBlock>
+            <TextBlock Text="Last render duration:" Margin="4" />
+            <TextBlock Text="{Binding RenderingDelay, Mode=OneWay}" Margin="4" />
             <Button Content="Save" Command="{Binding Save}" Margin="2"/>
         </StackPanel>
     </Grid>

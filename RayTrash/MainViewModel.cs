@@ -52,7 +52,7 @@ namespace RayTrash
 
         public Sampler SelectedSampler
         {
-            get =>  _renderer.Sampler;
+            get => _renderer.Sampler;
             set
             {
                 _renderer.Sampler = value;
@@ -147,10 +147,25 @@ namespace RayTrash
 
         private readonly Stopwatch _renderWatch;
         private TimeSpan _renderingDelay;
-        public TimeSpan RenderingDelay { get => _renderingDelay; private set => Set(ref _renderingDelay, value); }
+        public TimeSpan RenderingDelay
+        {
+            get => _renderingDelay;
+            private set => Set(ref _renderingDelay, value);
+        }
 
-        private TimeSpan _estimatedTimeOfArrival;
-        public TimeSpan EstimatedTimeOfArrival { get => _estimatedTimeOfArrival; private set => Set(ref _estimatedTimeOfArrival, value); }
+        private TimeSpan _remainingTime;
+        public TimeSpan RemainingTime
+        {
+            get => _remainingTime;
+            private set { Set(ref _remainingTime, value); }
+        }
+        private DateTime _estimatedTimeOfArrival;
+        public DateTime EstimatedTimeOfArrival
+        {
+            get => _estimatedTimeOfArrival;
+            private set => Set(ref _estimatedTimeOfArrival, value);
+        }
+
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -216,7 +231,8 @@ namespace RayTrash
             RenderProgress = e;
             if (RenderProgress > 0)
             {
-                EstimatedTimeOfArrival = TimeSpan.FromMilliseconds(_renderWatch.ElapsedMilliseconds / RenderProgress * (1 - RenderProgress));
+                RemainingTime = TimeSpan.FromMilliseconds(_renderWatch.ElapsedMilliseconds / RenderProgress * (1 - RenderProgress));
+                EstimatedTimeOfArrival = DateTime.Now + RemainingTime;
             }
 
         }
