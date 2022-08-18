@@ -14,31 +14,30 @@ namespace RayTrace
             var c = Vector3.Dot(oc, oc) - Radius * Radius;
             record = new HitRecord();
             var discriminant = b * b - a * c;
-            if (discriminant > 0)
+            if (discriminant < 0)
             {
-                var temp = (-b - Math.Sqrt(b * b - a * c)) / a;
-                if (tMin < temp && temp < tMax)
-                {
-                    var p = r.PointAt(temp);
-                    record.t = temp;
-                    record.p = p;
-                    record.normal = (p - Center) / Radius;
-                    record.Material = Material;
-                    return true;
-                }
+                return false;
+            }
 
-                temp = (-b + Math.Sqrt(b * b - a * c)) / a;
-                if (tMin < temp && temp < tMax)
+            var sqrd = Math.Sqrt(discriminant);
+
+
+            var temp = (-b - sqrd) / a;
+            if (temp < tMin || tMax < temp)
+            {
+                temp = (-b + sqrd) / a;
+                if (temp < tMin || tMax < temp)
                 {
-                    var p = r.PointAt(temp);
-                    record.t = temp;
-                    record.p = p;
-                    record.normal = (p - Center) / Radius;
-                    record.Material = Material;
-                    return true;
+                    return false;
                 }
             }
-            return false;
+
+            var p = r.PointAt(temp);
+            record.t = temp;
+            record.p = p;
+            record.normal = (p - Center) / Radius;
+            record.Material = Material;
+            return true;
         }
     }
 }
