@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace RayTrace
 {
@@ -25,13 +28,15 @@ namespace RayTrace
                 Focus = new AutoFocus(),
                 Lens = new PerfectLens()
             };
+            MaxDegreOfParallelism = Environment.ProcessorCount;
         }
+        public int MaxDegreOfParallelism { get; set; }
         public Camera Camera { get; set; }
         public RayTracer RayTracer { get; set; }
         public Sampler Sampler { get; set; }
         public List<Hitable> Hitables { get; set; }
 
-        public void Render(IRenderContext renderContext)
+        public async Task Render(IRenderContext renderContext, IProgress<double> progress, CancellationToken cancellation)
         {
             if (RayTracer == null)
             {
@@ -53,23 +58,48 @@ namespace RayTrace
                 throw new ArgumentNullException(nameof(Camera));
             }
 
-            int nx = renderContext.Width;
-            int ny = renderContext.Height;
-            renderContext.OnInit();
-
-            Camera.Aspect = (float)nx / (float)ny;
-
-            for (var j = ny - 1; j >= 0; j--)
+            await Task.Run(() =>
             {
-                for (var i = 0; i < nx; i++)
-                {
-                    var col = Sampler.color(i, j, nx, ny, Camera, RayTracer, Hitables);
-                    col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
-                    renderContext.OnRender(i, j, col[0], col[1], col[2], 1);
-                }
-            }
+                int nx = renderContext.Width;
+                int ny = renderContext.Height;
+                renderContext.OnInit();
 
-            renderContext.OnFinalise();
+                Camera.Aspect = (float)nx / (float)ny;
+
+                var progressIncrement = 1D / ny;
+                var progressValue = 0D;
+                void Render(int y)
+                {
+                    for (var i = 0; i < nx; i++)
+                    {
+                        var col = Sampler.color(i, y, nx, ny, Camera, RayTracer, Hitables);
+                        col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
+                        renderContext.OnRender(i, y, col[0], col[1], col[2], 1);
+                    }
+                    progressValue += progressIncrement;
+                    progress.Report(progressValue);
+                }
+                var options = new ExecutionDataflowBlockOptions
+                {
+                    CancellationToken = cancellation,
+                    MaxDegreeOfParallelism = MaxDegreOfParallelism
+                };
+                var action = new ActionBlock<int>(Render, options);
+
+                for (var j = ny - 1; j >= 0; j--)
+                {
+                    action.Post(j);
+                }
+
+                action.Complete();
+
+                action.Completion.Wait(cancellation);
+            }, cancellation)
+                .ContinueWith(t => renderContext.OnFinalise());
+        }
+        public void Render(IRenderContext renderContext)
+        {
+            Render(renderContext, new Progress<double>(), CancellationToken.None).Wait();
         }
     }
 }

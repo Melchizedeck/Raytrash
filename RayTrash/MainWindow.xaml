@@ -102,7 +102,7 @@
                                             <TextBox Grid.Column="1" Text="{Binding Distance}"/>
                                         </Grid>
                                     </DataTemplate>
-                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">                                       
+                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">
                                     </DataTemplate>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
@@ -142,7 +142,30 @@
                     </Grid>
                 </StackPanel>
             </GroupBox>
+            <Grid  IsEnabled="{Binding AllowModifications}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>                    
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="MaxDegreOfParallelism:"/>
+                <TextBox Grid.Column="1" Text="{Binding MaxDegreOfParallelism}"/>                
+            </Grid>
             <Button Content="Render" Command="{Binding Render}" Margin="2"/>
+            <Button  Content="Cancel Render" Command="{Binding CancelRender}" Margin="2"/>
+            <ProgressBar  Minimum="0" Maximum="1" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />
+
+            <TextBlock Margin="4" >
+                <Run Text="ETA:"/>
+                <Run Text="{Binding EstimatedTimeOfArrival.TotalSeconds, Mode=OneWay, StringFormat={}{0:F1}}"/>
+                <Run Text="Secondes"/>
+            </TextBlock>
+
+
+
+            <TextBlock Text="Last render duration:" Margin="4" />
+            <TextBlock Text="{Binding RenderingDelay, Mode=OneWay}" Margin="4" />
+
+
             <GroupBox Header="RayTracer" IsEnabled="{Binding AllowModifications}">
                 <Grid>
                     <Grid.RowDefinitions>

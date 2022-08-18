@@ -5,12 +5,12 @@ namespace RayTrace
 {
     public class RandomSampler : Sampler
     {
-        private Random _random;
+        private ThreadSafeRandom _random;
         public RandomSampler()
-            : this(new Random())
+            : this(new ThreadSafeRandom())
         {
         }
-        public RandomSampler(Random random)
+        public RandomSampler(ThreadSafeRandom random)
         {
             _random = random;
             RayCount = 50;
@@ -22,8 +22,8 @@ namespace RayTrace
             var col = new Vector3(0, 0, 0);
             for (var i = 0; i < RayCount; i++)
             {
-                var u = (float)((x - 0.5d + _random.NextDouble()) / width);
-                var v = (float)((y - 0.5d + _random.NextDouble()) / height);
+                var u = (float)((x - 0.5d + ThreadSafeRandom.NextDouble()) / width);
+                var v = (float)((y - 0.5d + ThreadSafeRandom.NextDouble()) / height);
 
                 var r = camera.GetRay(u, v);
                 col += rayTracer.color(r, hitables);

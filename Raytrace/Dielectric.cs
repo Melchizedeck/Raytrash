@@ -58,7 +58,7 @@ namespace RayTrace
                 reflectProb = 1;
             }
 
-            if (Random.NextDouble() < reflectProb)
+            if (ThreadSafeRandom.NextDouble() < reflectProb)
             {
                 scattered = new Ray(record.p, reflected);
             }

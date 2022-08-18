@@ -3,7 +3,9 @@ using RayTrace;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -17,7 +19,7 @@ namespace RayTrash
         private readonly Dispatcher _dispatcher;
         private readonly Dictionary<string, Func<BitmapEncoder>> _getEncoders;
         private readonly Renderer _renderer;
-
+        private readonly Progress<double> _progress;
         private BitmapSource _renderedBitmap;
         public BitmapSource RenderedBitmap
         {
@@ -26,6 +28,10 @@ namespace RayTrash
         }
         private Command _render;
         public ICommand Render => _render;
+
+        private Command _cancelRender;
+        public ICommand CancelRender => _cancelRender;
+
         private Command _save;
         public ICommand Save => _save;
         private Command _randomizeScene;
@@ -130,13 +136,31 @@ namespace RayTrash
                 RaisePropertyChangedEvent();
             }
         }
+        public int MaxDegreOfParallelism
+        {
+            get => _renderer.MaxDegreOfParallelism;
+            set
+            {
+                _renderer.MaxDegreOfParallelism = value;
+                RaisePropertyChangedEvent();
+            }
+        }
 
+        private readonly Stopwatch _renderWatch;
+        private TimeSpan _renderingDelay;
+        public TimeSpan RenderingDelay { get => _renderingDelay; private set => Set(ref _renderingDelay, value); }
+
+        private TimeSpan _estimatedTimeOfArrival;
+        public TimeSpan EstimatedTimeOfArrival { get => _estimatedTimeOfArrival; private set => Set(ref _estimatedTimeOfArrival, value); }
         public MainViewModel()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
-
+            _renderWatch = new Stopwatch();
             _renderer = new Renderer();
+            _progress = new Progress<double>();
+            _progress.ProgressChanged += _progress_ProgressChanged;
             _render = new Command(OnRender, CanRender);
+            _cancelRender = new Command(OnCancelRender, CanCancelRender);
             _save = new Command(OnSave, CanSave);
             _randomizeScene = new Command(OnRandomizeScene);
             _getEncoders = new Dictionary<string, Func<BitmapEncoder>>
@@ -187,28 +211,68 @@ namespace RayTrash
             RenderHeight = 100;
             FOV = 90;
         }
+
+        private void _progress_ProgressChanged(object sender, double e)
+        {
+            RenderProgress = e;
+            if (RenderProgress > 0)
+            {
+                EstimatedTimeOfArrival = TimeSpan.FromMilliseconds(_renderWatch.ElapsedMilliseconds / RenderProgress * (1 - RenderProgress));
+            }
+
+        }
+
+        private CancellationTokenSource _renderCancellationTokenSource;
+
         private void OnRender()
         {
             lock (this)
             {
-                _isRendering = true;
+                IsRendering = true;
                 AllowModifications = false;
+                RenderProgress = 0;
                 _render.RaiseCanExecuteChanged();
+                _cancelRender.RaiseCanExecuteChanged();
+                _renderWatch.Restart();
             }
             var context = new RenderContext(RenderWidth, RenderHeight, this);
 
-            Task.Run(() => _renderer.Render(context));
+            _renderCancellationTokenSource = new CancellationTokenSource();
+            _renderer.Render(context, _progress, _renderCancellationTokenSource.Token);
         }
 
         private bool _isRendering;
+
+        public bool IsRendering
+        {
+            get => _isRendering;
+            private set => Set(ref _isRendering, value);
+        }
+
+        private double _renderProgress;
+
+        public double RenderProgress
+        {
+            get => _renderProgress;
+            private set => Set(ref _renderProgress, value);
+        }
+
         private bool CanRender()
         {
             lock (this)
             {
-                return !_isRendering;
+                return !IsRendering;
             }
         }
 
+        private void OnCancelRender()
+        {
+            _renderCancellationTokenSource.Cancel();
+        }
+        private bool CanCancelRender()
+        {
+            return IsRendering;
+        }
         private void OnSave()
         {
             var sfd = new SaveFileDialog
@@ -347,17 +411,20 @@ namespace RayTrash
             {
                 lock (_viewModel)
                 {
-                    _viewModel._isRendering = false;
-
+                    _viewModel.IsRendering = false;
+                    _viewModel._renderWatch.Stop();
+                    _viewModel.RenderingDelay = _viewModel._renderWatch.Elapsed;
                     Action onFinalise = () =>
                     {
                         _viewModel._render.RaiseCanExecuteChanged();
+                        _viewModel._cancelRender.RaiseCanExecuteChanged();
                         var dpiX = 96d;
                         var dpiY = 96d;
                         _viewModel.RenderedBitmap = BitmapSource.Create(Width, Height, dpiX, dpiY, _pixelFormat, null, _bytes, _stride);
                         _viewModel._save.RaiseCanExecuteChanged();
                     };
                     _viewModel.AllowModifications = true;
+                    _viewModel.RenderProgress = 1;
                     var operation = _viewModel._dispatcher.BeginInvoke(onFinalise);
                 }
             }
