@@ -40,7 +40,7 @@ namespace RaytraceTest
             var sphere = new Sphere
             {
                 Center = new Vector3(0, 0, -1),
-                Radius = 0.5f
+                Radius = 0.5
             };
 
             var ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));

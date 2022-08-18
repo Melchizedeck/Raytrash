@@ -325,7 +325,7 @@ namespace RayTrash
 
                 new Sphere{ Center=new Vector3(0,1, 0), Radius=1, Material =new Dielectric{ RefractionIndex=1.5 }},
                 new Sphere{ Center=new Vector3(-4,1, 0), Radius=1, Material =new Lambertian{ Albedo= new Vector3(0.4, 0.2, 0.1) }},
-                new Sphere{ Center=new Vector3(4,1, 0), Radius=1, Material =new Metal{ Albedo= new Vector3(0.7f, 0.6, 0.5), Fuzz=0 }},
+                new Sphere{ Center=new Vector3(4,1, 0), Radius=1, Material =new Metal{ Albedo= new Vector3(0.7, 0.6, 0.5), Fuzz=0 }},
             };
             var random = new Random();
             for (var a = -11; a < 11; a++)

@@ -8,12 +8,12 @@ namespace RayTrace
         {
             if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
             {
-                return 0.5f * new Vector3(record.normal[0] + 1, record.normal[1] + 1, record.normal[2] + 1);
+                return 0.5 * (record.normal + new Vector3(1, 1, 1));
             }
 
             var unitDirection = Vector3.UnitVector(r.Direction);
-            var t = 0.5f * (unitDirection[1] + 1);
-            return (1.0f - t) * new Vector3(1, 1, 1) + t * new Vector3(0.5f, 0.7f, 1f);
+            var t = 0.5 * (unitDirection[1] + 1);
+            return (1.0 - t) * new Vector3(1, 1, 1) + t * new Vector3(0.5, 0.7, 1);
         }
     }
 }
