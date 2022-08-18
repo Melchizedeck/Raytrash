@@ -6,7 +6,7 @@ namespace RayTrace
     {
         public abstract Vector3 color(Ray r, ICollection<Hitable> hitables);
 
-        public bool Hit(ICollection<Hitable> hitables, Ray r, float tMin, float tMax, out HitRecord record)
+        public bool Hit(ICollection<Hitable> hitables, Ray r, double tMin, double tMax, out HitRecord record)
         {
             var closestSoFar = tMax;
             var hitAnything = false;

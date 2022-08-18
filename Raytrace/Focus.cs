@@ -2,7 +2,7 @@
 {
     public abstract class Focus
     {
-        public abstract float GetFocusDistance(Camera camera);
+        public abstract double GetFocusDistance(Camera camera);
     }
 
 

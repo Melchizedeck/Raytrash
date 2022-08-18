@@ -11,6 +11,6 @@
             Direction = direction;
         }
 
-        public Vector3 PointAt(float t) => Origin + (Direction * t);
+        public Vector3 PointAt(double t) => Origin + (Direction * t);
     }
 }

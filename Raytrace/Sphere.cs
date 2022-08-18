@@ -5,8 +5,8 @@ namespace RayTrace
     public class Sphere : Hitable
     {
         public Vector3 Center { get; set; }
-        public float Radius { get; set; }
-        public override bool Hit(Ray r, float tMin, float tMax, out HitRecord record)
+        public double Radius { get; set; }
+        public override bool Hit(Ray r, double tMin, double tMax, out HitRecord record)
         {
             var oc = r.Origin - Center;
             var a = Vector3.Dot(r.Direction, r.Direction);
@@ -16,7 +16,7 @@ namespace RayTrace
             var discriminant = b * b - a * c;
             if (discriminant > 0)
             {
-                var temp = (-b - (float)Math.Sqrt(b * b - a * c)) / a;
+                var temp = (-b - Math.Sqrt(b * b - a * c)) / a;
                 if (tMin < temp && temp < tMax)
                 {
                     var p = r.PointAt(temp);
@@ -27,7 +27,7 @@ namespace RayTrace
                     return true;
                 }
 
-                temp = (-b + (float)Math.Sqrt(b * b - a * c)) / a;
+                temp = (-b + Math.Sqrt(b * b - a * c)) / a;
                 if (tMin < temp && temp < tMax)
                 {
                     var p = r.PointAt(temp);

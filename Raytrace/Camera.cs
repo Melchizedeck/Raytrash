@@ -46,8 +46,8 @@ namespace RayTrace
             }
         }
 
-        private float _fov;
-        public float FOV
+        private double _fov;
+        public double FOV
         {
             get => _fov;
             set
@@ -57,8 +57,8 @@ namespace RayTrace
             }
         }
 
-        private float _aspect;
-        public float Aspect
+        private double _aspect;
+        public double Aspect
         {
             get => _aspect;
             set
@@ -82,7 +82,7 @@ namespace RayTrace
                 return;
             }
             var theta = FOV * Math.PI / 180;
-            var halfHeight = (float)Math.Tan(theta / 2);
+            var halfHeight = Math.Tan(theta / 2);
             var halfWidth = Aspect * halfHeight;
 
             var focus = Focus.GetFocusDistance(this);
@@ -96,7 +96,7 @@ namespace RayTrace
             Vertical = 2 * halfHeight * focus * v;
         }
 
-        public Ray GetRay(float u, float v)
+        public Ray GetRay(double u, double v)
         {
             return Lens.GetRay(this, u, v);
         }

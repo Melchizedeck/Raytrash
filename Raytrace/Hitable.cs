@@ -2,7 +2,7 @@
 {
     public abstract class Hitable
     {
-        public abstract bool Hit(Ray r, float tMin, float tMax, out HitRecord record);
+        public abstract bool Hit(Ray r, double tMin, double tMax, out HitRecord record);
 
         public Material Material { get; set; }
     }

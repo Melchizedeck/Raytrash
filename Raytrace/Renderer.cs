@@ -14,10 +14,10 @@ namespace RayTrace
             Sampler = new DirectSampler();
             Hitables = new List<Hitable>
             {
-                new Sphere{ Center= new Vector3(0,0,-1), Radius=0.5f, Material = new Lambertian{ Albedo=new Vector3(0.8f, 0.3f, 0.3f) } },
-                new Sphere{ Center= new Vector3(0,-100.5f,-1), Radius=100f, Material = new Lambertian{ Albedo=new Vector3(0.8f, 0.8f, 0f) } },
-                new Sphere{ Center= new Vector3(1,0,-1), Radius=0.5f, Material = new Metal{ Albedo=new Vector3(0.8f, 0.6f, 0.2f), Fuzz=0.3f } },
-                new Sphere{ Center= new Vector3(-1,0,-1), Radius=0.5f, Material = new Dielectric{  RefractionIndex=1.5f } },
+                new Sphere{ Center= new Vector3(0,0,-1), Radius=0.5, Material = new Lambertian{ Albedo=new Vector3(0.8, 0.3, 0.3) } },
+                new Sphere{ Center= new Vector3(0,-100.5,-1), Radius=100, Material = new Lambertian{ Albedo=new Vector3(0.8, 0.8, 0) } },
+                new Sphere{ Center= new Vector3(1,0,-1), Radius=0.5, Material = new Metal{ Albedo=new Vector3(0.8, 0.6, 0.2), Fuzz=0.3 } },
+                new Sphere{ Center= new Vector3(-1,0,-1), Radius=0.5, Material = new Dielectric{  RefractionIndex=1.5 } },
             };
             Camera = new Camera
             {
@@ -64,7 +64,7 @@ namespace RayTrace
                 int ny = renderContext.Height;
                 renderContext.OnInit();
 
-                Camera.Aspect = (float)nx / (float)ny;
+                Camera.Aspect = (double)nx / ny;
 
                 var progressIncrement = 1D / ny;
                 var progressValue = 0D;
@@ -73,7 +73,7 @@ namespace RayTrace
                     for (var i = 0; i < nx; i++)
                     {
                         var col = Sampler.color(i, y, nx, ny, Camera, RayTracer, Hitables);
-                        col = new Vector3((float)Math.Sqrt(col[0]), (float)Math.Sqrt(col[1]), (float)Math.Sqrt(col[2]));
+                        col = new Vector3(Math.Sqrt(col[0]), Math.Sqrt(col[1]), Math.Sqrt(col[2]));
                         renderContext.OnRender(i, y, col[0], col[1], col[2], 1);
                     }
                     progressValue += progressIncrement;

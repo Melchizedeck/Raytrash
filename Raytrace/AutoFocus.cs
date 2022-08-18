@@ -2,7 +2,7 @@
 {
     public class AutoFocus : Focus
     {
-        public override float GetFocusDistance(Camera camera)
+        public override double GetFocusDistance(Camera camera)
         {
             return (camera.LookFrom - camera.LookAt).Length;
         }

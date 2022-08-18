@@ -98,7 +98,7 @@ namespace RayTrash
             set { Set(ref _renderHeight, value); }
         }
 
-        public float FOV
+        public double FOV
         {
             get => _renderer.Camera.FOV;
             set
@@ -322,41 +322,41 @@ namespace RayTrash
         {
             var hitables = new List<Hitable>
             {
-                new Sphere{ Center=new Vector3(0,-1000, 0), Radius=1000, Material =new Lambertian{ Albedo= new Vector3(0.5f, 0.5f, 0.5f) }},
+                new Sphere{ Center=new Vector3(0,-1000, 0), Radius=1000, Material =new Lambertian{ Albedo= new Vector3(0.5, 0.5, 0.5) }},
 
-                new Sphere{ Center=new Vector3(0,1, 0), Radius=1, Material =new Dielectric{ RefractionIndex=1.5f }},
-                new Sphere{ Center=new Vector3(-4,1, 0), Radius=1, Material =new Lambertian{ Albedo= new Vector3(0.4f, 0.2f, 0.1f) }},
-                new Sphere{ Center=new Vector3(4,1, 0), Radius=1, Material =new Metal{ Albedo= new Vector3(0.7f, 0.6f, 0.5f), Fuzz=0 }},
+                new Sphere{ Center=new Vector3(0,1, 0), Radius=1, Material =new Dielectric{ RefractionIndex=1.5 }},
+                new Sphere{ Center=new Vector3(-4,1, 0), Radius=1, Material =new Lambertian{ Albedo= new Vector3(0.4, 0.2, 0.1) }},
+                new Sphere{ Center=new Vector3(4,1, 0), Radius=1, Material =new Metal{ Albedo= new Vector3(0.7f, 0.6, 0.5), Fuzz=0 }},
             };
             var random = new Random();
             for (var a = -11; a < 11; a++)
             {
                 for (var b = -11; b < 11; b++)
                 {
-                    var center = new Vector3(a + (float)(0.9 * random.NextDouble()), 0.2f, b + (float)(0.9 * random.NextDouble()));
+                    var center = new Vector3(a + 0.9 * random.NextDouble(), 0.2, b + 0.9 * random.NextDouble());
 
-                    if ((center - new Vector3(4, 0.2f, 0)).Length > 0.9)
+                    if ((center - new Vector3(4, 0.2, 0)).Length > 0.9)
                     {
                         Material material;
                         var choseMaterial = random.NextDouble();
-                        if (choseMaterial < 0.8f)
+                        if (choseMaterial < 0.8)
                         {
-                            material = new Lambertian { Albedo = new Vector3((float)(random.NextDouble() * random.NextDouble()), (float)(random.NextDouble() * random.NextDouble()), (float)(random.NextDouble() * random.NextDouble())) };
+                            material = new Lambertian { Albedo = new Vector3(random.NextDouble() * random.NextDouble(), random.NextDouble() * random.NextDouble(), random.NextDouble() * random.NextDouble()) };
                         }
-                        else if (choseMaterial < 0.95f)
+                        else if (choseMaterial < 0.95)
                         {
-                            material = new Metal { Albedo = new Vector3((float)(0.5 * (1 + random.NextDouble())), (float)(0.5 * (1 + random.NextDouble())), (float)(0.5 * (1 + random.NextDouble()))), Fuzz = (float)(0.5 + random.NextDouble()) };
+                            material = new Metal { Albedo = new Vector3(0.5 * (1 + random.NextDouble()), 0.5 * (1 + random.NextDouble()), 0.5 * (1 + random.NextDouble())), Fuzz = 0.5 + random.NextDouble() };
                         }
                         else
                         {
-                            material = new Dielectric { RefractionIndex = 1.5f };
+                            material = new Dielectric { RefractionIndex = 1.5 };
                         }
-                        hitables.Add(new Sphere { Center = center, Radius = 0.2f, Material = material });
+                        hitables.Add(new Sphere { Center = center, Radius = 0.2, Material = material });
                     }
                 }
             }
 
-            LookFrom = new Vector3(10, 2, 2.5f);
+            LookFrom = new Vector3(10, 2, 2.5);
             LookAt = new Vector3(0, 0, 0);
             FOV = 30;
 

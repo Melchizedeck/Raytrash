@@ -23,9 +23,9 @@ namespace RayTrash
                 return DependencyProperty.UnsetValue;
             }
 
-            float convert(string v)
+            double convert(string v)
             {
-                return float.Parse(v.Trim());
+                return double.Parse(v.Trim());
             }
 
             return new Vector3(convert(split[0]), convert(split[1]), convert(split[2]));

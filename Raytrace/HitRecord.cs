@@ -2,7 +2,7 @@
 {
     public struct HitRecord
     {
-        public float t;
+        public double t;
         public Vector3 p;
         public Vector3 normal;
 

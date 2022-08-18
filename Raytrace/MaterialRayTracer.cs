@@ -13,7 +13,7 @@ namespace RayTrace
             => color(r, hitables, 0);
         public Vector3 color(Ray r, ICollection<Hitable> hitables, int depth)
         {
-            if (Hit(hitables, r, 0, float.MaxValue, out HitRecord record))
+            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
             {
                 if (depth < MaxDepth && record.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
                 {

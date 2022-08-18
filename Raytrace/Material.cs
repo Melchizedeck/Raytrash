@@ -15,7 +15,7 @@ namespace RayTrace
             var p = new Vector3(0, 0, 0);
             do
             {
-                p = 2f * new Vector3((float)ThreadSafeRandom.NextDouble(), (float)ThreadSafeRandom.NextDouble(), (float)ThreadSafeRandom.NextDouble()) - new Vector3(1, 1, 1);
+                p = 2f * new Vector3(ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble()) - new Vector3(1, 1, 1);
             } while (Vector3.Dot(p, p) >= 1);
             return p;
         }

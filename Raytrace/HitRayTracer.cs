@@ -6,7 +6,7 @@ namespace RayTrace
     {
         public override Vector3 color(Ray r, ICollection<Hitable> hitables)
         {
-            if (Hit(hitables, r, 0, float.MaxValue, out HitRecord record))
+            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
             {
                 return new Vector3(1, 0, 0);
             }

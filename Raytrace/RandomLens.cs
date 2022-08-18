@@ -4,8 +4,8 @@ namespace RayTrace
 {
     public class RandomLens : Lens
     {
-        private float _aperture;
-        public float Aperture
+        private double _aperture;
+        public double Aperture
         {
             get => _aperture;
             set { _aperture = value; }
@@ -16,12 +16,12 @@ namespace RayTrace
             var p = new Vector3(0, 0, 0);
             do
             {
-                p = 2f * new Vector3((float)ThreadSafeRandom.NextDouble(), (float)ThreadSafeRandom.NextDouble(), 0) - new Vector3(1, 1, 0);
+                p = 2f * new Vector3(ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble(), 0) - new Vector3(1, 1, 0);
             } while (Vector3.Dot(p, p) >= 1);
             return p;
         }
 
-        public override Ray GetRay(Camera camera, float u, float v)
+        public override Ray GetRay(Camera camera, double u, double v)
         {
             var rd = Aperture / 2 * RandomInUnitDisk();
             var offset = camera.u * rd[0] + camera.v * rd[1];
