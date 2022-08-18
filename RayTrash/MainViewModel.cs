@@ -38,49 +38,48 @@ namespace RayTrash
         public ICommand RandomizeScene => _randomizeScene;
         public IList<RayTracer> AvailableRayTracers { get; }
 
-        private RayTracer _selectedRayTracer;
         public RayTracer SelectedRayTracer
         {
-            get => _selectedRayTracer;
+            get => _renderer.RayTracer;
             set
             {
-                Set(ref _selectedRayTracer, value);
                 _renderer.RayTracer = value;
+                RaisePropertyChangedEvent();
             }
         }
 
         public IList<Sampler> AvailableSamplers { get; }
-        private Sampler _selectedSampler;
+
         public Sampler SelectedSampler
         {
-            get => _selectedSampler;
+            get =>  _renderer.Sampler;
             set
             {
-                Set(ref _selectedSampler, value);
                 _renderer.Sampler = value;
+                RaisePropertyChangedEvent();
             }
         }
 
         public IList<Lens> AvailableLenses { get; }
-        private Lens _selectedLens;
+
         public Lens SelectedLens
         {
             get => _renderer.Camera.Lens;
             set
             {
-                Set(ref _selectedLens, value);
                 _renderer.Camera.Lens = value;
+                RaisePropertyChangedEvent();
             }
         }
         public IList<Focus> AvailableFocuses { get; }
-        private Focus _selectedFocuses;
+
         public Focus SelectedFocus
         {
             get => _renderer.Camera.Focus;
             set
             {
-                Set(ref _selectedFocuses, value);
                 _renderer.Camera.Focus = value;
+                RaisePropertyChangedEvent();
             }
         }
 
