@@ -12,11 +12,16 @@ namespace RayTrace
         public Vector3 RandomInUnitVector()
             => Vector3.UnitVector(RandomInUnitSphere());
 
+
+
+        private static Vector3 Random(double min, double max)
+            => new Vector3(ThreadSafeRandom.NextDouble(min, max), ThreadSafeRandom.NextDouble(min, max), ThreadSafeRandom.NextDouble(min, max));
+
         public Vector3 RandomInUnitSphere()
         {
             while (true)
             {
-                var p = Vector3.Random(-1, 1);
+                var p = Random(-1, 1);
                 if (p.SquaredLength >= 1)
                 {
                     continue;

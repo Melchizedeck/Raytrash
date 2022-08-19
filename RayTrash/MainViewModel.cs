@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -69,7 +68,7 @@ namespace RayTrash
             set
             {
                 Set(ref _selectedCameraLens, value);
-                _renderer.Camera.CameraLens = value.CameraLens;
+                _camera.CameraLens = value.CameraLens;
             }
         }
 
@@ -78,51 +77,64 @@ namespace RayTrash
         public int RenderWidth
         {
             get => _renderWidth;
-            set { Set(ref _renderWidth, value); }
+            set
+            {
+                Set(ref _renderWidth, value);
+                RefreshCameraAspect();
+            }
         }
 
         private int _renderHeight;
         public int RenderHeight
         {
             get => _renderHeight;
-            set { Set(ref _renderHeight, value); }
+            set
+            {
+                Set(ref _renderHeight, value);
+                RefreshCameraAspect();
+            }
+        }
+
+        private void RefreshCameraAspect()
+        {
+            _camera.Aspect = (double)RenderWidth / RenderHeight;
         }
 
         public double FOV
         {
-            get => _renderer.Camera.FOV;
+            get => _camera.FOV;
             set
             {
-                _renderer.Camera.FOV = value;
+                _camera.FOV = value;
                 RaisePropertyChangedEvent();
             }
         }
 
         public Vector3 LookFrom
         {
-            get => _renderer.Camera.LookFrom;
+            get => _camera.LookFrom;
             set
             {
-                _renderer.Camera.LookFrom = value;
+                _camera.LookFrom = value;
                 RaisePropertyChangedEvent();
             }
         }
 
         public Vector3 LookAt
         {
-            get => _renderer.Camera.LookAt;
+            get => _camera.LookAt;
             set
             {
-                _renderer.Camera.LookAt = value;
+                _camera.LookAt = value;
                 RaisePropertyChangedEvent();
             }
         }
         public Vector3 VUP
         {
-            get => _renderer.Camera.VUP;
+            get => _camera.VUP;
             set
             {
-                _renderer.Camera.VUP = value;
+                _camera.VUP = value;
                 RaisePropertyChangedEvent();
             }
         }
@@ -157,19 +169,25 @@ namespace RayTrash
             private set => Set(ref _estimatedTimeOfArrival, value);
         }
 
+        private readonly Camera _camera;
         public MainViewModel()
         {
+            Hitables = new ObservableCollection<Hitable>();
+
+            Hitables.Add(new Sphere { Center = new Vector3(0, 0, -1), Radius = 0.5, Material = new Lambertian { Albedo = new Vector3(0.8, 0.3, 0.3) } });
+            Hitables.Add(new Sphere { Center = new Vector3(0, -100.5, -1), Radius = 100, Material = new Lambertian { Albedo = new Vector3(0.8, 0.8, 0) } });
+            Hitables.Add(new Sphere { Center = new Vector3(1, 0, -1), Radius = 0.5, Material = new Metal { Albedo = new Vector3(0.8, 0.6, 0.2), Fuzz = 0.3 } });
+            Hitables.Add(new Sphere { Center = new Vector3(-1, 0, -1), Radius = 0.5, Material = new Dielectric { RefractionIndex = 1.5 } });
+
             _dispatcher = Dispatcher.CurrentDispatcher;
             _renderWatch = new Stopwatch();
-            _renderer = new Renderer
+            _camera = new Camera
             {
-                Camera = new Camera
-                {
-                    LookFrom = new Vector3(2, 2, 0),
-                    LookAt = new Vector3(0, 0, -1),
-                    VUP = new Vector3(0, 1, 0)
-                }
+                LookFrom = new Vector3(2, 2, 0),
+                LookAt = new Vector3(0, 0, -1),
+                VUP = new Vector3(0, 1, 0)
             };
+            _renderer = new Renderer();
             _progress = new Progress<double>();
             _progress.ProgressChanged += _progress_ProgressChanged;
             _render = new Command(OnRender, CanRender);
@@ -209,9 +227,9 @@ namespace RayTrash
                 new PerfectCameraLensViewModel(),
                 new RandomCameraLensViewModel{  Aperture= .2, SelectedFocusMode = FocusMode.Auto},
             };
-            
+
             SelectedCameraLens = AvailableCameraLenses[AvailableCameraLenses.Count - 1];
-            
+
             RenderWidth = 200;
             RenderHeight = 100;
             FOV = 90;
@@ -225,7 +243,6 @@ namespace RayTrash
                 RemainingTime = TimeSpan.FromMilliseconds(_renderWatch.ElapsedMilliseconds / RenderProgress * (1 - RenderProgress));
                 EstimatedTimeOfArrival = DateTime.Now + RemainingTime;
             }
-
         }
 
         private CancellationTokenSource _renderCancellationTokenSource;
@@ -326,14 +343,14 @@ namespace RayTrash
 
         private void OnRandomizeScene()
         {
-            var hitables = new List<Hitable>
-            {
-                new Sphere{ Center=new Vector3(0,-1000, 0), Radius=1000, Material =new Lambertian{ Albedo= new Vector3(0.5, 0.5, 0.5) }},
+            Hitables.Clear();
 
-                new Sphere{ Center=new Vector3(0,1, 0), Radius=1, Material =new Dielectric{ RefractionIndex=1.5 }},
-                new Sphere{ Center=new Vector3(-4,1, 0), Radius=1, Material =new Lambertian{ Albedo= new Vector3(0.4, 0.2, 0.1) }},
-                new Sphere{ Center=new Vector3(4,1, 0), Radius=1, Material =new Metal{ Albedo= new Vector3(0.7, 0.6, 0.5), Fuzz=0 }},
-            };
+            Hitables.Add(new Sphere { Center = new Vector3(0, -1000, 0), Radius = 1000, Material = new Lambertian { Albedo = new Vector3(0.5, 0.5, 0.5) } });
+
+            Hitables.Add(new Sphere { Center = new Vector3(0, 1, 0), Radius = 1, Material = new Dielectric { RefractionIndex = 1.5 } });
+            Hitables.Add(new Sphere { Center = new Vector3(-4, 1, 0), Radius = 1, Material = new Lambertian { Albedo = new Vector3(0.4, 0.2, 0.1) } });
+            Hitables.Add(new Sphere { Center = new Vector3(4, 1, 0), Radius = 1, Material = new Metal { Albedo = new Vector3(0.7, 0.6, 0.5), Fuzz = 0 } });
+
             var random = new Random();
             for (var a = -11; a < 11; a++)
             {
@@ -357,7 +374,7 @@ namespace RayTrash
                         {
                             material = new Dielectric { RefractionIndex = 1.5 };
                         }
-                        hitables.Add(new Sphere { Center = center, Radius = 0.2, Material = material });
+                        Hitables.Add(new Sphere { Center = center, Radius = 0.2, Material = material });
                     }
                 }
             }
@@ -366,7 +383,7 @@ namespace RayTrash
             LookAt = new Vector3(0, 0, 0);
             FOV = 30;
 
-            _renderer.Hitables = hitables;
+
         }
 
 
@@ -376,6 +393,8 @@ namespace RayTrash
             get => _allowModifications;
             private set => Set(ref _allowModifications, value);
         }
+
+        public ObservableCollection<Hitable> Hitables { get; }
 
         private class RenderContext : IRenderContext
         {
@@ -392,6 +411,9 @@ namespace RayTrash
 
             public int Height { get; }
 
+            public ICamera Camera => _viewModel._camera;
+
+            public IEnumerable<IHitable> Hitables => _viewModel.Hitables;
 
             private PixelFormat _pixelFormat;
             private int _bytesPerPixel;

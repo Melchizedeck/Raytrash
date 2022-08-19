@@ -2,7 +2,7 @@
 
 namespace RayTrace
 {
-    public class Camera
+    public class Camera : ICamera
     {
         public Vector3 w { get; private set; }
         public Vector3 u { get; private set; }

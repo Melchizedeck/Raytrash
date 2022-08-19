@@ -12,9 +12,9 @@ namespace RayTrace
         public int MaxDepth { get; set; }
 
         public double RayHitMin { get; set; }
-        public override Vector3 color(Ray r, ICollection<Hitable> hitables)
+        public override Vector3 color(Ray r, ICollection<IHitable> hitables)
             => color(r, hitables, RayHitMin, MaxDepth);
-        public Vector3 color(Ray r, ICollection<Hitable> hitables, double rayHitMin, int depth)
+        public Vector3 color(Ray r, ICollection<IHitable> hitables, double rayHitMin, int depth)
         {
             if (depth <= 0)
             {
@@ -22,7 +22,9 @@ namespace RayTrace
             }
             if (Hit(hitables, r, rayHitMin, double.MaxValue, out HitRecord record))
             {
-                if (record.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
+                var hit = record.Hit as Hitable;
+
+                if (hit != null && hit.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
                 {
                     return attenuation * color(scattered, hitables, rayHitMin, depth - 1);
                 }

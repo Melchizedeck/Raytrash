@@ -2,8 +2,8 @@
 
 namespace RayTrace
 {
-    public abstract class Sampler
+    public abstract class Sampler : ISampler
     {
-        public abstract Vector3 color(int x, int y, int width, int height, Camera camera, RayTracer rayTracer, ICollection<Hitable> hitables);
+        public abstract Vector3 color(int x, int y, int width, int height, ICamera camera, IRayTracer rayTracer, ICollection<IHitable> hitables);
     }
 }

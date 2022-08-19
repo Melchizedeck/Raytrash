@@ -4,7 +4,7 @@ namespace RayTrace
 {
     public class HitRayTracer : RayTracer
     {
-        public override Vector3 color(Ray r, ICollection<Hitable> hitables)
+        public override Vector3 color(Ray r, ICollection<IHitable> hitables)
         {
             if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
             {

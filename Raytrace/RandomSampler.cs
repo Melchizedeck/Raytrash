@@ -17,7 +17,7 @@ namespace RayTrace
         }
 
         public int RayCount { get; set; }
-        public override Vector3 color(int x, int y, int width, int height, Camera camera, RayTracer rayTracer, ICollection<Hitable> hitables)
+        public override Vector3 color(int x, int y, int width, int height, ICamera camera, IRayTracer rayTracer, ICollection<IHitable> hitables)
         {
             var col = new Vector3(0, 0, 0);
             for (var i = 0; i < RayCount; i++)

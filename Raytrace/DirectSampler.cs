@@ -4,7 +4,7 @@ namespace RayTrace
 {
     public class DirectSampler : Sampler
     {
-        public override Vector3 color(int x, int y, int width, int height, Camera camera, RayTracer rayTracer, ICollection<Hitable> hitables)
+        public override Vector3 color(int x, int y, int width, int height, ICamera camera, IRayTracer rayTracer, ICollection<IHitable> hitables)
         {
             var u = (double)x / (width - 1);
             var v = (double)y / (height - 1);

@@ -11,11 +11,6 @@ namespace RayTrace
             _values = new[] { x, y, z };
         }
 
-        public static Vector3 Random()
-            => new Vector3(ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble(), ThreadSafeRandom.NextDouble());
-
-        public static Vector3 Random(double min, double max)
-            => new Vector3(ThreadSafeRandom.NextDouble(min, max), ThreadSafeRandom.NextDouble(min, max), ThreadSafeRandom.NextDouble(min, max));
 
         public bool IsNearZero
         {

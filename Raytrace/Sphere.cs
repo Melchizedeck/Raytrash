@@ -38,7 +38,7 @@ namespace RayTrace
 
             var outwardNormal = (p - Center) / Radius;
             record.SetFaceNormal(r, outwardNormal);
-            record.Material = Material;
+            record.Hit = this;
             return true;
         }
     }
