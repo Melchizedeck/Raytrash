@@ -60,28 +60,19 @@ namespace RayTrash
             }
         }
 
-        public IList<Lens> AvailableLenses { get; }
+        public IList<CameraLensViewModel> AvailableCameraLenses { get; }
 
-        public Lens SelectedLens
+        private CameraLensViewModel _selectedCameraLens;
+        public CameraLensViewModel SelectedCameraLens
         {
-            get => _renderer.Camera.Lens;
+            get => _selectedCameraLens;
             set
             {
-                _renderer.Camera.Lens = value;
-                RaisePropertyChangedEvent();
+                Set(ref _selectedCameraLens, value);
+                _renderer.Camera.CameraLens = value.CameraLens;
             }
         }
-        public IList<Focus> AvailableFocuses { get; }
 
-        public Focus SelectedFocus
-        {
-            get => _renderer.Camera.Focus;
-            set
-            {
-                _renderer.Camera.Focus = value;
-                RaisePropertyChangedEvent();
-            }
-        }
 
         private int _renderWidth;
         public int RenderWidth
@@ -170,7 +161,15 @@ namespace RayTrash
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
             _renderWatch = new Stopwatch();
-            _renderer = new Renderer();
+            _renderer = new Renderer
+            {
+                Camera = new Camera
+                {
+                    LookFrom = new Vector3(2, 2, 0),
+                    LookAt = new Vector3(0, 0, -1),
+                    VUP = new Vector3(0, 1, 0)
+                }
+            };
             _progress = new Progress<double>();
             _progress.ProgressChanged += _progress_ProgressChanged;
             _render = new Command(OnRender, CanRender);
@@ -205,22 +204,14 @@ namespace RayTrash
 
             SelectedSampler = AvailableSamplers[AvailableSamplers.Count - 1];
 
-            AvailableFocuses = new List<Focus>
+            AvailableCameraLenses = new List<CameraLensViewModel>
             {
-                new FixFocus{ Distance = 1},
-                new AutoFocus()
+                new PerfectCameraLensViewModel(),
+                new RandomCameraLensViewModel{  Aperture= .2, SelectedFocusMode = FocusMode.Auto},
             };
-
-            SelectedFocus = AvailableFocuses[AvailableFocuses.Count - 1];
-
-            AvailableLenses = new List<Lens>
-            {
-                new PerfectLens(),
-                new RandomLens{  Aperture= 2},
-            };
-
-            SelectedLens = AvailableLenses[AvailableLenses.Count - 1];
-
+            
+            SelectedCameraLens = AvailableCameraLenses[AvailableCameraLenses.Count - 1];
+            
             RenderWidth = 200;
             RenderHeight = 100;
             FOV = 90;

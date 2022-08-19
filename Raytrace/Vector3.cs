@@ -45,6 +45,15 @@ namespace RayTrace
         public static Vector3 UnitVector(Vector3 a) => a / a.Length;
 
 
+        public override string ToString()
+        {
+            if (_values == null)
+            {
+                return "[Empty]";
+            }
+            return $"{_values[0]};{_values[1]};{_values[2]}";
+        }
+
     }
 
 }

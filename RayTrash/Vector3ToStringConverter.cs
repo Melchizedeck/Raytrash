@@ -11,7 +11,7 @@ namespace RayTrash
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var v = (Vector3)value;
-            return $"{v[0]};{v[1]};{v[2]}";
+            return v.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

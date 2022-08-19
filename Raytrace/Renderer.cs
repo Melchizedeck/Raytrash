@@ -25,8 +25,7 @@ namespace RayTrace
                 LookFrom = new Vector3(-2, 2, 1),
                 LookAt = new Vector3(0, 0, -1),
                 VUP = new Vector3(0, 1, 0),
-                Focus = new AutoFocus(),
-                Lens = new PerfectLens()
+                CameraLens = new PerfectLens()
             };
             MaxDegreOfParallelism = Environment.ProcessorCount;
         }

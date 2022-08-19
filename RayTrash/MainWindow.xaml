@@ -38,76 +38,72 @@
             </Grid>
             <GroupBox Header="Camera"  IsEnabled="{Binding AllowModifications}">
                 <StackPanel>
-                    <GroupBox Header="Lens" IsEnabled="{Binding AllowModifications}">
+                    <GroupBox Header="Camera Lens" IsEnabled="{Binding AllowModifications}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableLenses}"
-                                      SelectedItem="{Binding SelectedLens}" Margin="2">
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableCameraLenses}"
+                                      SelectedItem="{Binding SelectedCameraLens}" Margin="2">
                                 <ComboBox.Resources>
-                                    <DataTemplate DataType="{x:Type rayTrace:PerfectLens}">
+                                    <DataTemplate DataType="{x:Type local:PerfectCameraLensViewModel}">
                                         <TextBlock Text="Perfect"/>
                                     </DataTemplate>
-                                    <DataTemplate DataType="{x:Type rayTrace:RandomLens}">
+                                    <DataTemplate DataType="{x:Type local:RandomCameraLensViewModel}">
                                         <TextBlock Text="Random"/>
                                     </DataTemplate>
                                 </ComboBox.Resources>
                             </ComboBox>
-                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedLens}">
+                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedCameraLens}">
                                 <ContentPresenter.Resources>
-                                    <DataTemplate DataType="{x:Type rayTrace:PerfectLens}">
+                                    <DataTemplate DataType="{x:Type local:PerfectCameraLensViewModel}">
                                     </DataTemplate>
-                                    <DataTemplate DataType="{x:Type rayTrace:RandomLens}">
+                                    <DataTemplate DataType="{x:Type local:RandomCameraLensViewModel}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
                                             <TextBlock Text="Aperture:"/>
                                             <TextBox Grid.Column="1" Text="{Binding Aperture}"/>
+                                            <ComboBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="FocusModeComboBox"
+                                                      ItemsSource="{Binding AvailableFocusModes}"
+                                                      SelectedItem="{Binding SelectedFocusMode}" />
+
+                                            <TextBlock Grid.Row="2" Text="Focus:">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedFocusMode}" Value="Auto">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Focus}">
+                                                <TextBox.Style>
+                                                    <Style TargetType="TextBox">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedFocusMode}" Value="Auto">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBox.Style>
+                                            </TextBox>
                                         </Grid>
                                     </DataTemplate>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
                         </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Focus" IsEnabled="{Binding AllowModifications}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableFocuses}"
-                                      SelectedItem="{Binding SelectedFocus}" Margin="2">
-                                <ComboBox.Resources>
-                                    <DataTemplate DataType="{x:Type rayTrace:FixFocus}">
-                                        <TextBlock Text="Fix"/>
-                                    </DataTemplate>
-                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">
-                                        <TextBlock Text="Auto"/>
-                                    </DataTemplate>
-                                </ComboBox.Resources>
-                            </ComboBox>
-                            <ContentPresenter Grid.Row="1" Content="{Binding SelectedFocus}">
-                                <ContentPresenter.Resources>
-                                    <DataTemplate DataType="{x:Type rayTrace:FixFocus}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Aperture:"/>
-                                            <TextBox Grid.Column="1" Text="{Binding Distance}"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                    <DataTemplate DataType="{x:Type rayTrace:AutoFocus}">
-                                    </DataTemplate>
-                                </ContentPresenter.Resources>
-                            </ContentPresenter>
-                        </Grid>
-                    </GroupBox>
+                    </GroupBox>                   
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>

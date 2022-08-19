@@ -4,14 +4,12 @@ namespace RayTrace
 {
     public class Camera
     {
-        public Vector3 LowerLeftCorner { get; private set; }
-        public Vector3 Horizontal { get; private set; }
-        public Vector3 Vertical { get; private set; }
-
-
         public Vector3 w { get; private set; }
         public Vector3 u { get; private set; }
         public Vector3 v { get; private set; }
+
+        public double halfWidth { get; private set; }
+        public double halfHeight { get; private set; }
 
         private Vector3 _lookFrom;
         public Vector3 LookFrom
@@ -67,38 +65,43 @@ namespace RayTrace
                 Refresh();
             }
         }
-        public Lens Lens { get; set; }
-        private Focus _focus;
-        public Focus Focus
+
+        bool _refreshed;
+        private CameraLens _cameraLens;
+        public CameraLens CameraLens
         {
-            get => _focus;
-            set { _focus = value; Refresh(); }
+            get => _cameraLens;
+            set
+            {
+                _cameraLens = value;
+                if (_refreshed)
+                {
+                    _cameraLens.OnUpdate(this);
+                }
+            }
         }
 
         private void Refresh()
         {
-            if (LookFrom.IsEmpty || LookAt.IsEmpty || VUP.IsEmpty || Focus == null)
+            if (LookFrom.IsEmpty || LookAt.IsEmpty || VUP.IsEmpty || CameraLens == null)
             {
                 return;
             }
-            var theta = FOV * Math.PI / 180;
-            var halfHeight = Math.Tan(theta / 2);
-            var halfWidth = Aspect * halfHeight;
-
-            var focus = Focus.GetFocusDistance(this);
+            var theta = FOV * Math.PI / 180D;
+            halfHeight = Math.Tan(theta / 2D);
+            halfWidth = Aspect * halfHeight;
 
             w = Vector3.UnitVector(LookFrom - LookAt);
             u = Vector3.UnitVector(Vector3.Cross(VUP, w));
             v = Vector3.Cross(w, u);
 
-            LowerLeftCorner = LookFrom - halfWidth * u * focus - halfHeight * v * focus - w * focus;
-            Horizontal = 2 * halfWidth * focus * u;
-            Vertical = 2 * halfHeight * focus * v;
+            CameraLens.OnUpdate(this);
+            _refreshed = true;
         }
 
         public Ray GetRay(double u, double v)
         {
-            return Lens.GetRay(this, u, v);
+            return CameraLens.GetRay(u, v);
         }
     }
 }
