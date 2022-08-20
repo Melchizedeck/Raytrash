@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RayTrace
 {
@@ -7,12 +8,12 @@ namespace RayTrace
         int Width { get; }
         int Height { get; }
 
-        ICamera Camera { get;}
+        ICamera Camera { get; }
 
-        IEnumerable<IHitable> Hitables { get;}
+        IEnumerable<IHitable> Hitables { get; }
 
-        void OnInit();
-        void OnRender(int x, int y, double r, double g, double b, double alpha);
-        void OnFinalise();
+        Task OnInit();
+        Task OnRender(int x, int y, double r, double g, double b, double alpha);
+        Task OnFinalise();
     }
 }

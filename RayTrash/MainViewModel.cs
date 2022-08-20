@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -419,7 +420,7 @@ namespace RayTrash
             private int _bytesPerPixel;
             private int _stride;
             private byte[] _bytes;
-            public void OnInit()
+            public async Task OnInit()
             {
                 _pixelFormat = PixelFormats.Rgb24;
                 _bytesPerPixel = (_pixelFormat.BitsPerPixel + 7) / 8;
@@ -427,7 +428,7 @@ namespace RayTrash
                 _bytes = new byte[Height * _stride];
             }
 
-            public void OnRender(int x, int y, double r, double g, double b, double alpha)
+            public async Task OnRender(int x, int y, double r, double g, double b, double alpha)
             {
                 var pixelIndex = (Height - 1 - y) * _stride + x * _bytesPerPixel;
                 _bytes[pixelIndex] = (byte)(255D * r);
@@ -435,26 +436,26 @@ namespace RayTrash
                 _bytes[pixelIndex + 2] = (byte)(255D * b);
             }
 
-            public void OnFinalise()
+            public Task OnFinalise()
             {
-                lock (_viewModel)
+                Action onFinalise = () =>
                 {
                     _viewModel.IsRendering = false;
                     _viewModel._renderWatch.Stop();
                     _viewModel.RenderingDelay = _viewModel._renderWatch.Elapsed;
-                    Action onFinalise = () =>
-                    {
-                        _viewModel._render.RaiseCanExecuteChanged();
-                        _viewModel._cancelRender.RaiseCanExecuteChanged();
-                        var dpiX = 96d;
-                        var dpiY = 96d;
-                        _viewModel.RenderedBitmap = BitmapSource.Create(Width, Height, dpiX, dpiY, _pixelFormat, null, _bytes, _stride);
-                        _viewModel._save.RaiseCanExecuteChanged();
-                    };
+                    _viewModel._render.RaiseCanExecuteChanged();
+                    _viewModel._cancelRender.RaiseCanExecuteChanged();
+                    var dpiX = 96d;
+                    var dpiY = 96d;                    
+                    _viewModel.RenderedBitmap = BitmapSource.Create(Width, Height, dpiX, dpiY, _pixelFormat, null, _bytes, _stride);
+                    _viewModel._save.RaiseCanExecuteChanged();
                     _viewModel.AllowModifications = true;
                     _viewModel.RenderProgress = 1;
-                    var operation = _viewModel._dispatcher.BeginInvoke(onFinalise);
-                }
+                };
+
+                var operation = _viewModel._dispatcher.BeginInvoke(onFinalise);
+                return operation.Task;
+
             }
         }
     }

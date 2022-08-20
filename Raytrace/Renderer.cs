@@ -33,46 +33,39 @@ namespace RayTrace
 
             var hitables = renderContext.Hitables.ToArray();
 
-            await Task.Run(() =>
+
+            int nx = renderContext.Width;
+            int ny = renderContext.Height;
+            await renderContext.OnInit();
+
+            var progressIncrement = 1D / ny;
+            var progressValue = 0D;
+            async Task Render(int y)
             {
-                int nx = renderContext.Width;
-                int ny = renderContext.Height;
-                renderContext.OnInit();
-
-                var progressIncrement = 1D / ny;
-                var progressValue = 0D;
-                void Render(int y)
+                for (var i = 0; i < nx; i++)
                 {
-                    for (var i = 0; i < nx; i++)
-                    {
-                        var col = Sampler.color(i, y, nx, ny, renderContext.Camera, RayTracer, hitables);
-                        col = new Vector3(Math.Sqrt(col[0]), Math.Sqrt(col[1]), Math.Sqrt(col[2]));
-                        renderContext.OnRender(i, y, col[0], col[1], col[2], 1);
-                    }
-                    progressValue += progressIncrement;
-                    progress.Report(progressValue);
+                    var col = Sampler.color(i, y, nx, ny, renderContext.Camera, RayTracer, hitables);
+
+                    await renderContext.OnRender(i, y, col[0], col[1], col[2], 1);
                 }
-                var options = new ExecutionDataflowBlockOptions
-                {
-                    CancellationToken = cancellation,
-                    MaxDegreeOfParallelism = MaxDegreOfParallelism
-                };
-                var action = new ActionBlock<int>(Render, options);
+                progressValue += progressIncrement;
+                progress.Report(progressValue);
+            }
+            var options = new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = cancellation,
+                MaxDegreeOfParallelism = MaxDegreOfParallelism
+            };
+            var action = new ActionBlock<int>(Render, options);
 
-                for (var j = ny - 1; j >= 0; j--)
-                {
-                    action.Post(j);
-                }
+            for (var j = ny - 1; j >= 0; j--)
+            {
+                action.Post(j);
+            }
 
-                action.Complete();
+            action.Complete();
 
-                action.Completion.Wait(cancellation);
-            }, cancellation)
-                .ContinueWith(t => renderContext.OnFinalise());
-        }
-        public void Render(IRenderContext renderContext)
-        {
-            Render(renderContext, new Progress<double>(), CancellationToken.None).Wait();
+            await action.Completion.ContinueWith(async t => await renderContext.OnFinalise());
         }
     }
 }
