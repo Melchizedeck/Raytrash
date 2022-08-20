@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -16,6 +17,7 @@ namespace RayTrash
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly Dictionary<PixelFormat, Action<double, double, double, double, byte[], int>> _pixelSerializers;
         private readonly Dispatcher _dispatcher;
         private readonly Dictionary<string, Func<BitmapEncoder>> _getEncoders;
         private readonly Renderer _renderer;
@@ -234,6 +236,16 @@ namespace RayTrash
             RenderWidth = 200;
             RenderHeight = 100;
             FOV = 90;
+
+            AvailablePixelFormats = new ObservableCollection<PixelSerializer>
+            {
+                new Rgb24PixelSerializer(),
+                new Bgr24PixelSerializer(),
+                new Rgb48PixelSerializer(),
+                new Rgba64PixelSerializer(),
+                new Prgba128FloatPixelSerializer(),
+            };
+            SelectedPixelFormat = AvailablePixelFormats[AvailablePixelFormats.Count - 1];
         }
 
         private void _progress_ProgressChanged(object sender, double e)
@@ -259,7 +271,7 @@ namespace RayTrash
                 _cancelRender.RaiseCanExecuteChanged();
                 _renderWatch.Restart();
             }
-            var context = new RenderContext(RenderWidth, RenderHeight, this);
+            var context = new RenderContext(RenderWidth, RenderHeight, SelectedPixelFormat, this);
 
             _renderCancellationTokenSource = new CancellationTokenSource();
             _renderer.Render(context, _progress, _renderCancellationTokenSource.Token);
@@ -397,16 +409,30 @@ namespace RayTrash
 
         public ObservableCollection<Hitable> Hitables { get; }
 
+        public ObservableCollection<PixelSerializer> AvailablePixelFormats { get; }
+
+        private PixelSerializer _selectedPixelFormat;
+        public PixelSerializer SelectedPixelFormat
+        {
+            get => _selectedPixelFormat;
+            set => Set(ref _selectedPixelFormat, value);
+        }
+
+
         private class RenderContext : IRenderContext
         {
             private readonly MainViewModel _viewModel;
 
-            public RenderContext(int width, int height, MainViewModel viewModel)
+            private readonly Action<double, double, double, double, byte[], int> _getBytes;
+            public RenderContext(int width, int height, PixelSerializer pixelSerializer, MainViewModel viewModel)
             {
                 Width = width;
                 Height = height;
+                _pixelFormat = pixelSerializer.PixelFormat;
+                _bytesPerPixel = (_pixelFormat.BitsPerPixel + 7) / 8;
+                _stride = Width * _bytesPerPixel;
                 _viewModel = viewModel;
-
+                _getBytes = pixelSerializer.Write;
             }
             public int Width { get; }
 
@@ -422,18 +448,15 @@ namespace RayTrash
             private byte[] _bytes;
             public async Task OnInit()
             {
-                _pixelFormat = PixelFormats.Rgb24;
-                _bytesPerPixel = (_pixelFormat.BitsPerPixel + 7) / 8;
-                _stride = Width * _bytesPerPixel;
+
                 _bytes = new byte[Height * _stride];
             }
 
             public async Task OnRender(int x, int y, double r, double g, double b, double alpha)
             {
                 var pixelIndex = (Height - 1 - y) * _stride + x * _bytesPerPixel;
-                _bytes[pixelIndex] = (byte)(255D * r);
-                _bytes[pixelIndex + 1] = (byte)(255D * g);
-                _bytes[pixelIndex + 2] = (byte)(255D * b);
+
+                _getBytes(r, g, b, alpha, _bytes, pixelIndex);
             }
 
             public Task OnFinalise()
@@ -446,7 +469,7 @@ namespace RayTrash
                     _viewModel._render.RaiseCanExecuteChanged();
                     _viewModel._cancelRender.RaiseCanExecuteChanged();
                     var dpiX = 96d;
-                    var dpiY = 96d;                    
+                    var dpiY = 96d;
                     _viewModel.RenderedBitmap = BitmapSource.Create(Width, Height, dpiX, dpiY, _pixelFormat, null, _bytes, _stride);
                     _viewModel._save.RaiseCanExecuteChanged();
                     _viewModel.AllowModifications = true;
@@ -454,6 +477,7 @@ namespace RayTrash
                 };
 
                 var operation = _viewModel._dispatcher.BeginInvoke(onFinalise);
+
                 return operation.Task;
 
             }

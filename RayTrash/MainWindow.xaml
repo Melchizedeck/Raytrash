@@ -227,6 +227,49 @@
                 <TextBlock Text="MaxDegreOfParallelism:"/>
                 <TextBox Grid.Column="1" Text="{Binding MaxDegreOfParallelism}"/>
             </Grid>
+            <GroupBox Header="Pixel serializer" IsEnabled="{Binding AllowModifications}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailablePixelFormats}"
+                      SelectedItem="{Binding SelectedPixelFormat}" Margin="2">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type local:Rgb24PixelSerializer}">
+                                <TextBlock Text="Rgb24"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Bgr24PixelSerializer}">
+                                <TextBlock Text="Bgr24"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Rgb48PixelSerializer}">
+                                <TextBlock Text="Bgr48"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Rgba64PixelSerializer}">
+                                <TextBlock Text="Rgba64"/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Prgba128FloatPixelSerializer}">
+                                <TextBlock Text="Prgba128"/>
+                            </DataTemplate>
+                            
+                        </ComboBox.Resources>
+                    </ComboBox>
+                    <ContentPresenter Grid.Row="1" Content="{Binding SelectedPixelFormat}">
+                        <ContentPresenter.Resources>
+                            <DataTemplate DataType="{x:Type local:Rgb24PixelSerializer}">
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Bgr24PixelSerializer}">
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Rgb48PixelSerializer}">
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Rgba64PixelSerializer}">
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type local:Prgba128FloatPixelSerializer}">
+                            </DataTemplate>                            
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                </Grid>
+            </GroupBox>
             <Button Content="Render" Command="{Binding Render}" Margin="2" Height="40"  FontWeight="Bold"/>
             <Button  Content="Cancel Render" Command="{Binding CancelRender}" Margin="2"/>
             <ProgressBar  Minimum="0" Maximum="1" Value="{Binding RenderProgress, Mode=OneWay}" Margin="4" />
