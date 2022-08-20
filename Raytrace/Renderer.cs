@@ -44,7 +44,7 @@ namespace RayTrace
             {
                 for (var i = 0; i < nx; i++)
                 {
-                    var col = Sampler.color(i, y, nx, ny, renderContext.Camera, RayTracer, hitables);
+                    var col = Sampler.Sample(i, y, nx, ny, renderContext.Camera, RayTracer, hitables);
 
                     await renderContext.OnRender(i, y, col[0], col[1], col[2], 1);
                 }
@@ -66,6 +66,6 @@ namespace RayTrace
             action.Complete();
 
             await action.Completion.ContinueWith(async t => await renderContext.OnFinalise());
-        }
+        }      
     }
 }

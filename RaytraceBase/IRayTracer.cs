@@ -4,6 +4,6 @@ namespace RayTrace
 {
     public interface IRayTracer
     {
-        Vector3 color(Ray r, ICollection<IHitable> hitables);
+        Vector3 Trace(Ray r, ICollection<IHitable> hitables);
     }
 }

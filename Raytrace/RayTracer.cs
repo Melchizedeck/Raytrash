@@ -4,7 +4,7 @@ namespace RayTrace
 {
     public abstract class RayTracer : IRayTracer
     {
-        public abstract Vector3 color(Ray r, ICollection<IHitable> hitables);
+        public abstract Vector3 Trace(Ray r, ICollection<IHitable> hitables);
 
         public bool Hit(ICollection<IHitable> hitables, Ray r, double tMin, double tMax, out HitRecord record)
         {
