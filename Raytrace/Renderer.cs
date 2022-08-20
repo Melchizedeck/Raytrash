@@ -65,7 +65,8 @@ namespace RayTrace
 
             action.Complete();
 
-            await action.Completion.ContinueWith(async t => await renderContext.OnFinalise());
-        }      
+            await action.Completion;
+            await renderContext.OnFinalise();
+        }
     }
 }
