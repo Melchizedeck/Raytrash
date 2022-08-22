@@ -22,9 +22,7 @@ namespace RayTrace
             }
             if (Hit(hitables, r, rayHitMin, double.MaxValue, out HitRecord<Hitable> record))
             {
-                var hit = record.Hit as Hitable;
-
-                if (hit != null && hit.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
+                if (record.Hit.Material.Scatter(r, record, out Vector3 attenuation, out Ray scattered))
                 {
                     return attenuation * color(scattered, hitables, rayHitMin, depth - 1);
                 }
