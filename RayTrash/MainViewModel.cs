@@ -419,7 +419,7 @@ namespace RayTrash
         }
 
 
-        private class RenderContext : IRenderContext
+        private class RenderContext : IRenderContext<Hitable>
         {
             private readonly MainViewModel _viewModel;
 
@@ -440,7 +440,7 @@ namespace RayTrash
 
             public ICamera Camera => _viewModel._camera;
 
-            public IEnumerable<IHitable> Hitables => _viewModel.Hitables;
+            public IEnumerable<IHitable<Hitable>> Hitables => _viewModel.Hitables;
 
             private PixelFormat _pixelFormat;
             private int _bytesPerPixel;

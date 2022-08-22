@@ -2,18 +2,18 @@
 
 namespace RayTrace
 {
-    public abstract class RayTracer : IRayTracer
+    public abstract class RayTracer : IRayTracer<Hitable>
     {
-        public abstract Vector3 Trace(Ray r, ICollection<IHitable> hitables);
+        public abstract Vector3 Trace(Ray r, ICollection<IHitable<Hitable>> hitables);
 
-        public bool Hit(ICollection<IHitable> hitables, Ray r, double tMin, double tMax, out HitRecord record)
+        public bool Hit(ICollection<IHitable<Hitable>> hitables, Ray r, double tMin, double tMax, out HitRecord<Hitable> record)
         {
             var closestSoFar = tMax;
             var hitAnything = false;
-            record = new HitRecord();
+            record = new HitRecord<Hitable>();
             foreach (var hitable in hitables)
             {
-                if (hitable.Hit(r, tMin, closestSoFar, out HitRecord tempRecord))
+                if (hitable.Hit(r, tMin, closestSoFar, out HitRecord<Hitable> tempRecord))
                 {
                     hitAnything = true;
                     closestSoFar = tempRecord.t;

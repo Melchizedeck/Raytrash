@@ -7,7 +7,7 @@ namespace RayTrace
         public Vector3 Albedo { get; set; }
 
 
-        public override bool Scatter(Ray r, HitRecord record, out Vector3 attenuation, out Ray scattered)
+        public override bool Scatter(Ray r, HitRecord<Hitable> record, out Vector3 attenuation, out Ray scattered)
         {
             var scatterDirection = record.normal + RandomInUnitVector();
             if (scatterDirection.IsNearZero)

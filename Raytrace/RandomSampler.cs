@@ -10,7 +10,7 @@ namespace RayTrace
         }
 
         public int RayCount { get; set; }
-        public override Vector3 Sample(int x, int y, int width, int height, ICamera camera, IRayTracer rayTracer, ICollection<IHitable> hitables)
+        public override Vector3 Sample(int x, int y, int width, int height, ICamera camera, IRayTracer<Hitable> rayTracer, ICollection<IHitable<Hitable>> hitables)
         {
             var col = new Vector3(0, 0, 0);
             for (var i = 0; i < RayCount; i++)

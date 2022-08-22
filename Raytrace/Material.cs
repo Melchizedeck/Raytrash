@@ -41,6 +41,6 @@ namespace RayTrace
                 return -inUnitSphere;
             }
         }
-        public abstract bool Scatter(Ray r, HitRecord record, out Vector3 attenuation, out Ray scattered);
+        public abstract bool Scatter(Ray r, HitRecord<Hitable> record, out Vector3 attenuation, out Ray scattered);
     }
 }

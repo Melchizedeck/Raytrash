@@ -1,12 +1,12 @@
 ﻿namespace RayTrace
 {
-    public struct HitRecord
+    public struct HitRecord<THit>
     {
         public double t;
         public Vector3 p;
         public Vector3 normal;
         public bool frontFace;
-        public IHitable Hit;
+        public THit Hit;
         public void SetFaceNormal(Ray r, Vector3 outwardNormal)
         {
             frontFace = Vector3.Dot(r.Direction, outwardNormal) < 0;

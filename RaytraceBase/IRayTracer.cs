@@ -2,8 +2,8 @@
 
 namespace RayTrace
 {
-    public interface IRayTracer
+    public interface IRayTracer<THit>
     {
-        Vector3 Trace(Ray r, ICollection<IHitable> hitables);
+        Vector3 Trace(Ray r, ICollection<IHitable<THit>> hitables);
     }
 }

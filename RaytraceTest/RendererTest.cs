@@ -10,13 +10,13 @@ namespace RaytraceTest
     [TestClass]
     public class RendererTest
     {
-        class TestContext : IRenderContext
+        class TestContext : IRenderContext<Hitable>
         {
             private int _width;
             private int _height;
             private ICamera _camera;
-            IEnumerable<IHitable> _hitables;
-            public TestContext(int width, int height, ICamera camera, IEnumerable<IHitable> hitables)
+            IEnumerable<IHitable<Hitable>> _hitables;
+            public TestContext(int width, int height, ICamera camera, IEnumerable<IHitable<Hitable>> hitables)
             {
                 _width = width;
                 _height = height;
@@ -29,7 +29,7 @@ namespace RaytraceTest
 
             public ICamera Camera => _camera;
 
-            public IEnumerable<IHitable> Hitables => _hitables;
+            public IEnumerable<IHitable<Hitable>> Hitables => _hitables;
 
             public event EventHandler Finalized;
             public Task OnFinalise()
@@ -94,7 +94,7 @@ namespace RaytraceTest
         {
 
             var camera = new CameraDummy();
-            var hitables = new List<IHitable>();
+            var hitables = new List<IHitable<Hitable>>();
 
 
             var progress = new Progress<double>();
@@ -116,7 +116,7 @@ namespace RaytraceTest
             var renderer = new Renderer();
 
             var camera = new CameraDummy();
-            var hitables = new List<IHitable>();
+            var hitables = new List<IHitable<Hitable>>();
 
 
             var progress = new Progress<double>();

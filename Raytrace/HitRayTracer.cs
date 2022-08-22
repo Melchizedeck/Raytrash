@@ -4,9 +4,9 @@ namespace RayTrace
 {
     public class HitRayTracer : RayTracer
     {
-        public override Vector3 Trace(Ray r, ICollection<IHitable> hitables)
+        public override Vector3 Trace(Ray r, ICollection<IHitable<Hitable>> hitables)
         {
-            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
+            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord<Hitable> record))
             {
                 return new Vector3(1, 0, 0);
             }

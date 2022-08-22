@@ -6,13 +6,13 @@ namespace RayTrace
     {
         public Vector3 Center { get; set; }
         public double Radius { get; set; }
-        public override bool Hit(Ray r, double tMin, double tMax, out HitRecord record)
+        public override bool Hit(Ray r, double tMin, double tMax, out HitRecord<Hitable> record)
         {
             var oc = r.Origin - Center;
             var a = Vector3.Dot(r.Direction, r.Direction);
             var b = Vector3.Dot(oc, r.Direction);
             var c = Vector3.Dot(oc, oc) - Radius * Radius;
-            record = new HitRecord();
+            record = new HitRecord<Hitable>();
             var discriminant = b * b - a * c;
             if (discriminant < 0)
             {

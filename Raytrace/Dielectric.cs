@@ -21,7 +21,7 @@ namespace RayTrace
             return rOutPerp + rOutParallel;
         }
 
-        public override bool Scatter(Ray r, HitRecord record, out Vector3 attenuation, out Ray scattered)
+        public override bool Scatter(Ray r, HitRecord<Hitable> record, out Vector3 attenuation, out Ray scattered)
         {
             attenuation = new Vector3(1, 1, 1);
 

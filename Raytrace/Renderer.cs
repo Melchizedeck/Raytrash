@@ -19,7 +19,7 @@ namespace RayTrace
         public RayTracer RayTracer { get; set; }
         public Sampler Sampler { get; set; }
 
-        public async Task Render(IRenderContext renderContext, IProgress<double> progress, CancellationToken cancellation)
+        public async Task Render(IRenderContext<Hitable> renderContext, IProgress<double> progress, CancellationToken cancellation)
         {
             if (RayTracer == null)
             {

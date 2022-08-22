@@ -12,15 +12,15 @@ namespace RayTrace
         public int MaxDepth { get; set; }
 
         public double RayHitMin { get; set; }
-        public override Vector3 Trace(Ray r, ICollection<IHitable> hitables)
+        public override Vector3 Trace(Ray r, ICollection<IHitable<Hitable>> hitables)
             => color(r, hitables, RayHitMin, MaxDepth);
-        public Vector3 color(Ray r, ICollection<IHitable> hitables, double rayHitMin, int depth)
+        public Vector3 color(Ray r, ICollection<IHitable<Hitable>> hitables, double rayHitMin, int depth)
         {
             if (depth <= 0)
             {
                 return new Vector3(0, 0, 0);
             }
-            if (Hit(hitables, r, rayHitMin, double.MaxValue, out HitRecord record))
+            if (Hit(hitables, r, rayHitMin, double.MaxValue, out HitRecord<Hitable> record))
             {
                 var hit = record.Hit as Hitable;
 

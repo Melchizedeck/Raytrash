@@ -45,7 +45,7 @@ namespace RaytraceTest
 
             var ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
 
-            Assert.IsTrue(sphere.Hit(ray, 0, 2, out HitRecord record));
+            Assert.IsTrue(sphere.Hit(ray, 0, 2, out HitRecord<Hitable> record));
             Assert.AreEqual(0, record.normal[0]);
             Assert.AreEqual(0, record.normal[1]);
             Assert.AreEqual(0, record.normal[1]);

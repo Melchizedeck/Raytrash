@@ -4,9 +4,9 @@ namespace RayTrace
 {
     public class NormalRayTracer : RayTracer
     {
-        public override Vector3 Trace(Ray r, ICollection<IHitable> hitables)
+        public override Vector3 Trace(Ray r, ICollection<IHitable<Hitable>> hitables)
         {
-            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord record))
+            if (Hit(hitables, r, 0, double.MaxValue, out HitRecord<Hitable> record))
             {
                 return 0.5 * (record.normal + new Vector3(1, 1, 1));
             }

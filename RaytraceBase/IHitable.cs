@@ -1,7 +1,7 @@
 ﻿namespace RayTrace
 {
-    public interface IHitable
+    public interface IHitable<THit>
     {
-        bool Hit(Ray r, double tMin, double tMax, out HitRecord record);
+        bool Hit(Ray r, double tMin, double tMax, out HitRecord<THit> record);
     }
 }
