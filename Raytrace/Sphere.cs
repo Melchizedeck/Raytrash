@@ -6,6 +6,7 @@ namespace RayTrace
     {
         public Vector3 Center { get; set; }
         public double Radius { get; set; }
+
         public override bool Hit(Ray r, double tMin, double tMax, out HitRecord<Hitable> record)
         {
             var oc = r.Origin - Center;

@@ -2,7 +2,7 @@
 
 namespace RayTrace
 {
-    public abstract class RayTracer : IRayTracer<Hitable>
+    public abstract class RayTracer : IRayTracer<Hitable, Vector3>
     {
         public abstract Vector3 Trace(Ray r, ICollection<IHitable<Hitable>> hitables);
 
