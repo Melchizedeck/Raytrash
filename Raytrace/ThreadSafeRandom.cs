@@ -4,7 +4,7 @@ namespace RayTrace
 {
     public class ThreadSafeRandom
     {
-        private static Random _global = new Random((int)DateTime.Now.Ticks);
+        private static readonly Random _global = new Random((int)DateTime.Now.Ticks);
         [ThreadStatic]
         private static Random _local;
         public static double NextDouble()

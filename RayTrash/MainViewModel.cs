@@ -17,7 +17,6 @@ namespace RayTrash
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly Dictionary<PixelFormat, Action<double, double, double, double, byte[], int>> _pixelSerializers;
         private readonly Dispatcher _dispatcher;
         private readonly Dictionary<string, Func<BitmapEncoder>> _getEncoders;
         private readonly Renderer _renderer;
@@ -28,15 +27,15 @@ namespace RayTrash
             get => _renderedBitmap;
             private set { Set(ref _renderedBitmap, value); }
         }
-        private Command _render;
+        private readonly Command _render;
         public ICommand Render => _render;
 
-        private Command _cancelRender;
+        private readonly Command _cancelRender;
         public ICommand CancelRender => _cancelRender;
 
-        private Command _save;
+        private readonly Command _save;
         public ICommand Save => _save;
-        private Command _randomizeScene;
+        private readonly Command _randomizeScene;
         public ICommand RandomizeScene => _randomizeScene;
         public IList<RayTracer> AvailableRayTracers { get; }
 
@@ -192,7 +191,7 @@ namespace RayTrash
             };
             _renderer = new Renderer();
             _progress = new Progress<double>();
-            _progress.ProgressChanged += _progress_ProgressChanged;
+            _progress.ProgressChanged += progress_ProgressChanged;
             _render = new Command(OnRender, CanRender);
             _cancelRender = new Command(OnCancelRender, CanCancelRender);
             _save = new Command(OnSave, CanSave);
@@ -245,10 +244,10 @@ namespace RayTrash
                 new Rgba64PixelSerializer(),
                 new Prgba128FloatPixelSerializer(),
             };
-            SelectedPixelFormat = AvailablePixelFormats[AvailablePixelFormats.Count - 1];
+            SelectedPixelFormat = AvailablePixelFormats[^1];
         }
 
-        private void _progress_ProgressChanged(object sender, double e)
+        private void progress_ProgressChanged(object sender, double e)
         {
             RenderProgress = e;
             if (RenderProgress > 0)
@@ -443,8 +442,8 @@ namespace RayTrash
             public IEnumerable<IHitable<Hitable>> Hitables => _viewModel.Hitables;
 
             private PixelFormat _pixelFormat;
-            private int _bytesPerPixel;
-            private int _stride;
+            private readonly int _bytesPerPixel;
+            private readonly int _stride;
             private byte[] _bytes;
             public async Task OnInit()
             {

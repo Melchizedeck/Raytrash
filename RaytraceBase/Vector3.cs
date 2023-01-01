@@ -2,7 +2,7 @@
 
 namespace RayTrace
 {
-    public struct Vector3
+    public readonly struct Vector3
     {
         private readonly double[] _values;
 

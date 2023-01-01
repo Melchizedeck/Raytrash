@@ -34,7 +34,6 @@ namespace RayTrash
             }
         }
 
-        private double _aperture;
         public double Aperture
         {
             get => _cameraLens.Aperture;

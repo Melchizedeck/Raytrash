@@ -12,10 +12,10 @@ namespace RaytraceTest
     {
         class TestContext : IRenderContext<Hitable>
         {
-            private int _width;
-            private int _height;
-            private ICamera _camera;
-            IEnumerable<IHitable<Hitable>> _hitables;
+            private readonly int _width;
+            private readonly int _height;
+            private readonly ICamera _camera;
+            readonly IEnumerable<IHitable<Hitable>> _hitables;
             public TestContext(int width, int height, ICamera camera, IEnumerable<IHitable<Hitable>> hitables)
             {
                 _width = width;
@@ -100,14 +100,12 @@ namespace RaytraceTest
             var progress = new Progress<double>();
             var context = new TestContext(1, 1, camera, hitables);
 
-            using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
-            {
-                var renderer = new Renderer { RayTracer = null };
-                Assert.ThrowsExceptionAsync<ArgumentException>(() => renderer.Render(context, progress, cancellationTokenSource.Token));
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            var renderer = new Renderer { RayTracer = null };
+            Assert.ThrowsExceptionAsync<ArgumentException>(() => renderer.Render(context, progress, cancellationTokenSource.Token));
 
-                renderer = new Renderer { Sampler = null };
-                Assert.ThrowsExceptionAsync<ArgumentException>(() => renderer.Render(context, progress, cancellationTokenSource.Token));
-            }
+            renderer = new Renderer { Sampler = null };
+            Assert.ThrowsExceptionAsync<ArgumentException>(() => renderer.Render(context, progress, cancellationTokenSource.Token));
         }
 
         [TestMethod]
@@ -133,19 +131,17 @@ namespace RaytraceTest
             context.Finalized += (o, e) => finalizeCount++; ;
             context.Rendered += (o, e) => renderCount++; ;
 
-            using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
-            {
-                var timeSpan = TimeSpan.FromSeconds(1);
-                var succeed = renderer.Render(context, progress, cancellationTokenSource.Token).Wait(timeSpan);
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            var timeSpan = TimeSpan.FromSeconds(1);
+            var succeed = renderer.Render(context, progress, cancellationTokenSource.Token).Wait(timeSpan);
 
-                Assert.AreEqual(1D, progressRatio, "not progressed");
+            Assert.AreEqual(1D, progressRatio, "not progressed");
 
-                Assert.IsTrue(succeed);
+            Assert.IsTrue(succeed);
 
-                Assert.AreEqual(1, initializeCount, "not initialized");
-                Assert.AreEqual(1, renderCount, "not rendered once");
-                Assert.AreEqual(1, finalizeCount, "not finalized");
-            }
+            Assert.AreEqual(1, initializeCount, "not initialized");
+            Assert.AreEqual(1, renderCount, "not rendered once");
+            Assert.AreEqual(1, finalizeCount, "not finalized");
         }
     }
 

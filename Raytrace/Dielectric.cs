@@ -10,7 +10,7 @@ namespace RayTrace
         double Reflectance(double cosine, double ref_idx)
         {
             var r0 = (1D - ref_idx) / (1D + ref_idx);
-            r0 = r0 * r0;
+            r0 *= r0;
             return r0 + (1D - r0) * Math.Pow(1D - cosine, 5D);
         }
         public Vector3 Refract(Vector3 uv, Vector3 n, double etaiOverEtat)
